@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "studio": "remotion studio",
-    "render": "remotion render VideoTeste out/video-teste.mp4"
+    "render": "remotion render VideoTeste out/video-teste.mp4",
+    "render:vertical": "remotion render VideoVertical out/video-vertical.mp4",
+    "musica": "node scripts/gerar-musica.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.542",

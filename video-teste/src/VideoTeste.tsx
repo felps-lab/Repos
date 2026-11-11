@@ -1,20 +1,29 @@
 import {
   AbsoluteFill,
+  Audio,
   Sequence,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
 
-type Props = {titulo: string; subtitulo: string};
+type Props = {titulo: string; subtitulo: string; musica: boolean};
 
 const fonte = 'Inter, "Helvetica Neue", Arial, sans-serif';
+
+// true quando o vídeo é mais alto do que largo (9:16)
+const useVertical = () => {
+  const {width, height} = useVideoConfig();
+  return height > width;
+};
 
 // Fundo em gradiente que gira lentamente durante todo o vídeo
 const Fundo: React.FC = () => {
   const frame = useCurrentFrame();
-  const angulo = interpolate(frame, [0, 180], [120, 240]);
+  const {durationInFrames} = useVideoConfig();
+  const angulo = interpolate(frame, [0, durationInFrames], [120, 240]);
   return (
     <AbsoluteFill
       style={{background: `linear-gradient(${angulo}deg, #0f172a, #312e81 55%, #7c3aed)`}}
@@ -22,12 +31,13 @@ const Fundo: React.FC = () => {
   );
 };
 
-// Estrelas piscando no fundo
+// Estrelas piscando no fundo, espalhadas pelo quadro inteiro
 const Estrelas: React.FC = () => {
   const frame = useCurrentFrame();
-  const estrelas = Array.from({length: 60}, (_, i) => ({
-    x: (i * 97) % 1920,
-    y: (i * 53 + (i % 7) * 131) % 1080,
+  const {width, height} = useVideoConfig();
+  const estrelas = Array.from({length: 80}, (_, i) => ({
+    x: (i * 97) % width,
+    y: (i * 53 + (i % 7) * 131 + Math.floor((i * 97) / width) * 211) % height,
     r: 1.5 + (i % 3),
     fase: i * 0.7,
   }));
@@ -53,46 +63,54 @@ const Estrelas: React.FC = () => {
 };
 
 // Cena 1: lua surgindo + título
-const Abertura: React.FC<Props> = ({titulo, subtitulo}) => {
+const Abertura: React.FC<Omit<Props, 'musica'>> = ({titulo, subtitulo}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const vertical = useVertical();
   const lua = spring({frame, fps, config: {damping: 14}});
   const texto = spring({frame: frame - 15, fps, config: {damping: 200}});
   const sub = interpolate(frame, [35, 55], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const tamanhoLua = vertical ? 320 : 220;
   return (
-    <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', fontFamily: fonte}}>
+    <AbsoluteFill
+      style={{alignItems: 'center', justifyContent: 'center', fontFamily: fonte, padding: 60, textAlign: 'center'}}
+    >
       <div
         style={{
-          width: 220,
-          height: 220,
+          width: tamanhoLua,
+          height: tamanhoLua,
           borderRadius: '50%',
           background: '#fde68a',
-          boxShadow: '0 0 120px 30px rgba(253,230,138,0.45), inset -40px -20px 0 0 #fbbf24',
+          boxShadow: `0 0 120px 30px rgba(253,230,138,0.45), inset -${tamanhoLua / 5.5}px -${tamanhoLua / 11}px 0 0 #fbbf24`,
           transform: `scale(${lua}) translateY(${(1 - lua) * 200}px)`,
-          marginBottom: 60,
+          marginBottom: vertical ? 90 : 60,
         }}
       />
       <h1
         style={{
           color: 'white',
-          fontSize: 140,
+          fontSize: vertical ? 150 : 140,
           fontWeight: 800,
           margin: 0,
+          lineHeight: 1.05,
           opacity: texto,
           transform: `translateY(${(1 - texto) * 60}px)`,
         }}
       >
         {titulo}
       </h1>
-      <p style={{color: '#c4b5fd', fontSize: 52, margin: '20px 0 0', opacity: sub}}>{subtitulo}</p>
+      <p style={{color: '#c4b5fd', fontSize: vertical ? 56 : 52, margin: '28px 0 0', opacity: sub}}>
+        {subtitulo}
+      </p>
     </AbsoluteFill>
   );
 };
 
-// Cena 2: três cartões entrando em sequência
+// Cena 2: três cartões entrando em sequência (em linha no 16:9, em coluna no 9:16)
 const Cartoes: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const vertical = useVertical();
   const itens = [
     {emoji: '🎬', texto: 'Animações'},
     {emoji: '🎨', texto: 'Cores'},
@@ -100,7 +118,13 @@ const Cartoes: React.FC = () => {
   ];
   return (
     <AbsoluteFill
-      style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 60, fontFamily: fonte}}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: vertical ? 'column' : 'row',
+        gap: vertical ? 50 : 60,
+        fontFamily: fonte,
+      }}
     >
       {itens.map((item, i) => {
         const s = spring({frame: frame - i * 8, fps, config: {damping: 12}});
@@ -108,21 +132,22 @@ const Cartoes: React.FC = () => {
           <div
             key={item.texto}
             style={{
-              width: 380,
-              height: 380,
+              width: vertical ? 760 : 380,
+              height: vertical ? 340 : 380,
               borderRadius: 40,
               background: 'rgba(255,255,255,0.12)',
               border: '2px solid rgba(255,255,255,0.3)',
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: vertical ? 'row' : 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              gap: vertical ? 50 : 20,
               transform: `scale(${s}) rotate(${(1 - s) * -20}deg)`,
               color: 'white',
             }}
           >
             <div style={{fontSize: 140}}>{item.emoji}</div>
-            <div style={{fontSize: 56, fontWeight: 700, marginTop: 20}}>{item.texto}</div>
+            <div style={{fontSize: vertical ? 72 : 56, fontWeight: 700}}>{item.texto}</div>
           </div>
         );
       })}
@@ -133,30 +158,49 @@ const Cartoes: React.FC = () => {
 // Cena 3: encerramento com fade
 const Encerramento: React.FC = () => {
   const frame = useCurrentFrame();
+  const {durationInFrames} = useVideoConfig();
+  const vertical = useVertical();
   const entrada = interpolate(frame, [0, 15], [0, 1], {extrapolateRight: 'clamp'});
-  const saida = interpolate(frame, [40, 60], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const saida = interpolate(frame, [durationInFrames - 20, durationInFrames], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
   return (
     <AbsoluteFill
-      style={{alignItems: 'center', justifyContent: 'center', fontFamily: fonte, opacity: entrada * saida}}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: fonte,
+        textAlign: 'center',
+        padding: 60,
+        opacity: entrada * saida,
+      }}
     >
-      <h2 style={{color: 'white', fontSize: 110, fontWeight: 800, margin: 0}}>Teste concluído ✨</h2>
-      <p style={{color: '#c4b5fd', fontSize: 44, marginTop: 24}}>Feito com Remotion + Claude</p>
+      <h2 style={{color: 'white', fontSize: 110, fontWeight: 800, margin: 0, lineHeight: 1.1}}>
+        Teste {vertical ? <br /> : null}concluído ✨
+      </h2>
+      <p style={{color: '#c4b5fd', fontSize: vertical ? 52 : 44, marginTop: 28}}>Feito com Remotion + Claude</p>
     </AbsoluteFill>
   );
 };
 
-export const VideoTeste: React.FC<Props> = (props) => {
+export const VideoTeste: React.FC<Props> = ({musica, ...textos}) => {
+  const {durationInFrames} = useVideoConfig();
+  // Divide o vídeo nas três cenas, nas mesmas proporções em qualquer duração
+  const fimAbertura = Math.round(durationInFrames * 0.39);
+  const fimCartoes = Math.round(durationInFrames * 0.67);
   return (
     <AbsoluteFill>
+      {musica ? <Audio src={staticFile('musica.wav')} /> : null}
       <Fundo />
       <Estrelas />
-      <Sequence durationInFrames={70}>
-        <Abertura {...props} />
+      <Sequence durationInFrames={fimAbertura}>
+        <Abertura {...textos} />
       </Sequence>
-      <Sequence from={70} durationInFrames={50}>
+      <Sequence from={fimAbertura} durationInFrames={fimCartoes - fimAbertura}>
         <Cartoes />
       </Sequence>
-      <Sequence from={120} durationInFrames={60}>
+      <Sequence from={fimCartoes}>
         <Encerramento />
       </Sequence>
     </AbsoluteFill>
