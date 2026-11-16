@@ -46,3 +46,27 @@ public/
    ```bash
    npx remotion render Frigideira out/Frigideira.mp4 --crf=18
    ```
+
+---
+
+# Retrospectiva 2026: modelo de vídeo de memórias
+
+Composição `Retrospectiva2026`: vídeo vertical 9:16, cerca de 46 s, com clima nostálgico (grão de filme, luzes quentes, polaroids) e uma trilha original de despedida (piano, cordas e caixinha de música).
+
+**Estrutura:** abertura "2026" → 12 memórias (uma por mês, 3,6 s cada, em polaroid com zoom lento) → pilha de fotos → "Obrigado, 2026." / "que venha 2027" → fade para preto.
+
+## Como colocar suas lembranças
+
+1. Copie suas fotos (jpg/png/webp) ou vídeos curtos (mp4/mov/webm) para `public/retrospectiva/memorias/`.
+2. Rode `npm run dev` e abra a composição **Retrospectiva2026**. Na barra lateral, edite cada memória:
+   - `arquivo`: por exemplo `retrospectiva/memorias/janeiro.jpg` (vazio mostra "Sua foto aqui")
+   - `mes`: nome que aparece no topo
+   - `legenda`: frase escrita à mão na polaroid
+   - Dá para mudar também `ano`, `subtitulo`, `despedida` e `recado`.
+   (Ou edite direto o `defaultProps` em `src/Root.tsx`.)
+3. Renderize: `npx remotion render Retrospectiva2026 out/retrospectiva.mp4 --crf=18`
+
+Se mudar a quantidade de memórias, a duração se ajusta sozinha. Para o acorde final da música cair junto com a despedida, regenere a trilha com a nova duração:
+`python scripts/music_farewell.py <segundos>`. A duração é `11,2 + n × 2,93` segundos para `n` memórias (12 memórias = 46,4 s; a trilha padrão tem 47,5 s).
+
+Fotos verticais (4:5 ou 9:16) ficam melhores. Vídeos tocam sem som, por baixo da trilha.
