@@ -1,86 +1,782 @@
 {
-  "song": "melhores/song/resenha.mp3",
-  "grid": {"period": 0.42859, "offset": 0.0813, "beatsPerBar": 4},
-  "clipsDir": "clips-resenha",
-  "sections": [
-    {"name": "abertura", "fromBar": 0, "bars": 5},
-    {"name": "subida", "fromBar": 5, "bars": 3},
-    {"name": "dia", "fromBar": 8, "bars": 8},
-    {"name": "noite", "fromBar": 16, "bars": 8},
-    {"name": "fotos", "fromBar": 24, "bars": 8},
-    {"name": "mix", "fromBar": 32, "bars": 8},
-    {"name": "rapido", "fromBar": 40, "bars": 2},
-    {"name": "pausa", "fromBar": 42, "bars": 2},
-    {"name": "final", "fromBar": 44, "bars": 4}
-  ],
-  "drops": [8, 16, 24, 32, 40, 44],
-  "clips": [
-    {"id": "r01", "src": "27.mp4", "in": 1.9,  "beats": 20, "speed": 0.5, "bw": "out", "note": "piscina, abertura"},
-
-    {"id": "r02", "src": "42.mp4", "in": 0.2,  "beats": 2, "speed": 1,   "bw": "full", "note": "sorriso"},
-    {"id": "r03", "src": "25.mp4", "in": 2.4,  "beats": 2, "speed": 1,   "bw": "none", "note": "óculos"},
-    {"id": "r04", "src": "41.mp4", "in": 3.6,  "beats": 2, "speed": 1,   "bw": "full", "note": "camisa do Brasil"},
-    {"id": "r05", "src": "56.mp4", "in": 5.3,  "beats": 2, "speed": 1,   "bw": "none", "note": "selfie na rua"},
-    {"id": "r06", "src": "39.mp4", "in": 1.5,  "beats": 2, "speed": 1,   "bw": "full", "note": "sorriso à noite"},
-    {"id": "r07", "src": "14.mp4", "in": 2.3,  "beats": 2, "speed": 1,   "bw": "none", "note": "sorriso no patinete"},
-
-    {"id": "r08", "src": "09.mp4", "in": 1.6,  "beats": 4, "speed": 3,   "note": "DROP: cachorro pela janela"},
-    {"id": "r09", "src": "57.mp4", "in": 0.2,  "beats": 4, "speed": 1.6, "note": "cadeiras no porta-malas"},
-    {"id": "r10", "src": "12.mp4", "in": 0.8,  "beats": 4, "speed": 1,   "note": "luvas de boxe"},
-    {"id": "r11", "src": "06.mp4", "in": 8.5,  "beats": 4, "speed": 2,   "note": "dancinha"},
-    {"id": "r12", "src": "05.mp4", "in": 40.0, "beats": 4, "speed": 1.5, "note": "bolo"},
-    {"id": "r13", "src": "10.mp4", "in": 1.9,  "beats": 4, "speed": 0.75,"note": "tombo no escritório"},
-    {"id": "r14", "src": "08.mp4", "in": 0.0,  "beats": 2, "speed": 1,   "note": "montinho"},
-    {"id": "r15", "src": "01.mp4", "in": 36.5, "beats": 2, "speed": 1.5, "note": "virando a garrafa"},
-    {"id": "r16", "src": "00.mp4", "in": 4.4,  "beats": 4, "speed": 0.6, "bw": "full", "note": "o tombo da noite"},
-
-    {"id": "r17", "src": "13.mp4", "in": 2.4,  "beats": 4, "speed": 1.3, "note": "multidão"},
-    {"id": "r18", "src": "52.mp4", "in": 3.0,  "beats": 4, "speed": 1.2, "note": "palco vermelho"},
-    {"id": "r19", "src": "19.mp4", "in": 22.0, "beats": 4, "speed": 5,   "note": "festival 5x"},
-    {"id": "r20", "src": "20.mp4", "in": 6.4,  "beats": 2, "speed": 1,   "note": "risada"},
-    {"id": "r21", "src": "16.mp4", "in": 12.6, "beats": 2, "speed": 1,   "note": "gargalhada"},
-    {"id": "r22", "src": "15.mp4", "in": 1.0,  "beats": 2, "speed": 1,   "note": "carro à noite"},
-    {"id": "r23", "src": "22.mp4", "in": 13.5, "beats": 2, "speed": 1.5, "note": "dança no carro"},
-    {"id": "r24", "src": "29.mp4", "in": 12.0, "beats": 4, "speed": 1.3, "note": "festa no carro"},
-    {"id": "r25", "src": "04.mp4", "in": 4.5,  "beats": 4, "speed": 1.3, "note": "selfie na rua"},
-    {"id": "r26", "src": "53.mp4", "in": 1.0,  "beats": 4, "speed": 0.5, "note": "show em câmera lenta"},
-
-    {"id": "r27", "src": "33.mp4", "in": 3.5,  "beats": 4, "speed": 1.2, "note": "óculos de sol"},
-    {"id": "p01", "photo": "35.jpg", "beats": 2},
-    {"id": "p02", "photo": "37.jpg", "beats": 2},
-    {"id": "p03", "photo": "38.jpg", "beats": 2},
-    {"id": "p04", "photo": "36.jpg", "beats": 2},
-    {"id": "p05", "photo": "24.jpg", "beats": 2},
-    {"id": "r28", "src": "07.mp4", "in": 4.0,  "beats": 4, "speed": 1.3, "note": "risadas no ônibus"},
-    {"id": "p06", "photo": "46.jpg", "beats": 2},
-    {"id": "p07", "photo": "30.jpg", "beats": 2},
-    {"id": "p08", "photo": "48.jpg", "beats": 2},
-    {"id": "p09", "photo": "21.jpg", "beats": 2},
-    {"id": "p10", "photo": "58.jpg", "beats": 2},
-    {"id": "r29", "src": "49.mp4", "in": 9.0,  "beats": 4, "speed": 1.2, "note": "tchau no carro"},
-
-    {"id": "r30", "src": "11.mp4", "in": 3.0,  "beats": 4, "speed": 2.5, "note": "patinete ao entardecer"},
-    {"id": "r31", "src": "47.mp4", "in": 6.5,  "beats": 4, "speed": 2,   "note": "batata frita"},
-    {"id": "r32", "src": "18.mp4", "in": 30.0, "beats": 4, "speed": 2,   "note": "deitado no chão"},
-    {"id": "r33", "src": "31.mp4", "in": 6.0,  "beats": 4, "speed": 1.5, "fit": "contain", "note": "dança na sala"},
-    {"id": "r34", "src": "55.mp4", "in": 2.4,  "beats": 2, "speed": 1,   "note": "capacete"},
-    {"id": "r35", "src": "19.mp4", "in": 52.0, "beats": 2, "speed": 1,   "note": "festival"},
-    {"id": "r36", "src": "23.mp4", "in": 11.0, "beats": 4, "speed": 1,   "note": "pulo na piscina"},
-    {"id": "r37", "src": "26.mp4", "in": 20.0, "beats": 4, "speed": 0.75, "fit": "contain", "rotate": -90, "note": "selfie em grupo"},
-    {"id": "r38", "src": "53.mp4", "in": 16.5, "beats": 4, "speed": 1,   "note": "rostos no show"},
-
-    {"id": "r39", "src": "57.mp4", "in": 1.0,  "beats": 1, "speed": 1,   "bw": "full", "note": "rápido"},
-    {"id": "r40", "src": "12.mp4", "in": 3.0,  "beats": 1, "speed": 1,   "note": "rápido"},
-    {"id": "r41", "src": "09.mp4", "in": 2.2,  "beats": 1, "speed": 2,   "bw": "full", "note": "rápido"},
-    {"id": "r42", "src": "13.mp4", "in": 3.0,  "beats": 1, "speed": 1,   "note": "rápido"},
-    {"id": "r43", "src": "52.mp4", "in": 3.5,  "beats": 1, "speed": 1,   "bw": "full", "note": "rápido"},
-    {"id": "r44", "src": "19.mp4", "in": 35.0, "beats": 1, "speed": 2,   "note": "rápido"},
-    {"id": "r45", "src": "06.mp4", "in": 15.0, "beats": 1, "speed": 2,   "bw": "full", "note": "rápido"},
-    {"id": "r46", "src": "01.mp4", "in": 38.5, "beats": 1, "speed": 1,   "note": "rápido"},
-
-    {"id": "r47", "src": "23.mp4", "in": 16.7, "beats": 8, "speed": 0.5, "bw": "full", "note": "pausa: piscina à noite"},
-
-    {"id": "r48", "src": "26.mp4", "in": 14.0, "beats": 8, "speed": 0.5, "bw": "out", "fit": "contain", "rotate": -90, "note": "foto em grupo, volta a cor"},
-    {"id": "r49", "src": "14.mp4", "in": 5.0,  "beats": 8, "speed": 0.5, "note": "pôr do sol, final"}
-  ]
+ "song": "melhores/song/resenha.mp3",
+ "grid": {
+  "period": 0.42859,
+  "offset": 0.0813,
+  "beatsPerBar": 4
+ },
+ "clipsDir": "clips-resenha",
+ "sections": [
+  {
+   "name": "abertura",
+   "fromBar": 0,
+   "bars": 5
+  },
+  {
+   "name": "subida",
+   "fromBar": 5,
+   "bars": 3
+  },
+  {
+   "name": "dia",
+   "fromBar": 8,
+   "bars": 8
+  },
+  {
+   "name": "noite",
+   "fromBar": 16,
+   "bars": 8
+  },
+  {
+   "name": "fotos",
+   "fromBar": 24,
+   "bars": 8
+  },
+  {
+   "name": "mix",
+   "fromBar": 32,
+   "bars": 8
+  },
+  {
+   "name": "rapido",
+   "fromBar": 40,
+   "bars": 2
+  },
+  {
+   "name": "pausa",
+   "fromBar": 42,
+   "bars": 2
+  },
+  {
+   "name": "resenha",
+   "fromBar": 44,
+   "bars": 8
+  },
+  {
+   "name": "resenha2",
+   "fromBar": 52,
+   "bars": 8
+  },
+  {
+   "name": "hit",
+   "fromBar": 60,
+   "bars": 1
+  },
+  {
+   "name": "pausa2",
+   "fromBar": 61,
+   "bars": 3
+  },
+  {
+   "name": "energia",
+   "fromBar": 64,
+   "bars": 4
+  },
+  {
+   "name": "final",
+   "fromBar": 68,
+   "bars": 4
+  }
+ ],
+ "drops": [
+  8,
+  16,
+  24,
+  32,
+  40,
+  44,
+  52,
+  60,
+  64,
+  68
+ ],
+ "clips": [
+  {
+   "id": "r01",
+   "src": "27.mp4",
+   "in": 1.9,
+   "beats": 20,
+   "speed": 0.5,
+   "bw": "out",
+   "note": "piscina, abertura"
+  },
+  {
+   "id": "r02",
+   "src": "42.mp4",
+   "in": 0.2,
+   "beats": 2,
+   "speed": 1,
+   "bw": "full",
+   "note": "sorriso"
+  },
+  {
+   "id": "r03",
+   "src": "25.mp4",
+   "in": 2.4,
+   "beats": 2,
+   "speed": 1,
+   "bw": "none",
+   "note": "óculos"
+  },
+  {
+   "id": "r04",
+   "src": "41.mp4",
+   "in": 3.6,
+   "beats": 2,
+   "speed": 1,
+   "bw": "full",
+   "note": "camisa do Brasil"
+  },
+  {
+   "id": "r05",
+   "src": "56.mp4",
+   "in": 5.3,
+   "beats": 2,
+   "speed": 1,
+   "bw": "none",
+   "note": "selfie na rua"
+  },
+  {
+   "id": "r06",
+   "src": "39.mp4",
+   "in": 1.5,
+   "beats": 2,
+   "speed": 1,
+   "bw": "full",
+   "note": "sorriso à noite"
+  },
+  {
+   "id": "r07",
+   "src": "14.mp4",
+   "in": 2.3,
+   "beats": 2,
+   "speed": 1,
+   "bw": "none",
+   "note": "sorriso no patinete"
+  },
+  {
+   "id": "r08",
+   "src": "09.mp4",
+   "in": 1.6,
+   "beats": 4,
+   "speed": 3,
+   "note": "DROP: cachorro pela janela"
+  },
+  {
+   "id": "r09",
+   "src": "57.mp4",
+   "in": 0.2,
+   "beats": 4,
+   "speed": 1.6,
+   "note": "cadeiras no porta-malas"
+  },
+  {
+   "id": "r10",
+   "src": "12.mp4",
+   "in": 0.8,
+   "beats": 4,
+   "speed": 1,
+   "note": "luvas de boxe"
+  },
+  {
+   "id": "r11",
+   "src": "06.mp4",
+   "in": 8.5,
+   "beats": 4,
+   "speed": 2,
+   "note": "dancinha"
+  },
+  {
+   "id": "r12",
+   "src": "05.mp4",
+   "in": 40.0,
+   "beats": 4,
+   "speed": 1.5,
+   "note": "bolo"
+  },
+  {
+   "id": "r13",
+   "src": "10.mp4",
+   "in": 1.9,
+   "beats": 4,
+   "speed": 0.75,
+   "note": "tombo no escritório"
+  },
+  {
+   "id": "r14",
+   "src": "08.mp4",
+   "in": 0.0,
+   "beats": 2,
+   "speed": 1,
+   "note": "montinho"
+  },
+  {
+   "id": "r15",
+   "src": "01.mp4",
+   "in": 36.5,
+   "beats": 2,
+   "speed": 1.5,
+   "note": "virando a garrafa"
+  },
+  {
+   "id": "r16",
+   "src": "00.mp4",
+   "in": 4.4,
+   "beats": 4,
+   "speed": 0.6,
+   "bw": "full",
+   "note": "o tombo da noite"
+  },
+  {
+   "id": "r17",
+   "src": "13.mp4",
+   "in": 2.4,
+   "beats": 4,
+   "speed": 1.3,
+   "note": "multidão"
+  },
+  {
+   "id": "r18",
+   "src": "52.mp4",
+   "in": 3.0,
+   "beats": 4,
+   "speed": 1.2,
+   "note": "palco vermelho"
+  },
+  {
+   "id": "r19",
+   "src": "19.mp4",
+   "in": 22.0,
+   "beats": 4,
+   "speed": 5,
+   "note": "festival 5x"
+  },
+  {
+   "id": "r20",
+   "src": "20.mp4",
+   "in": 6.4,
+   "beats": 2,
+   "speed": 1,
+   "note": "risada"
+  },
+  {
+   "id": "r21",
+   "src": "16.mp4",
+   "in": 12.6,
+   "beats": 2,
+   "speed": 1,
+   "note": "gargalhada"
+  },
+  {
+   "id": "r22",
+   "src": "15.mp4",
+   "in": 1.0,
+   "beats": 2,
+   "speed": 1,
+   "note": "carro à noite"
+  },
+  {
+   "id": "r23",
+   "src": "22.mp4",
+   "in": 13.5,
+   "beats": 2,
+   "speed": 1.5,
+   "note": "dança no carro"
+  },
+  {
+   "id": "r24",
+   "src": "29.mp4",
+   "in": 12.0,
+   "beats": 4,
+   "speed": 1.3,
+   "note": "festa no carro"
+  },
+  {
+   "id": "r25",
+   "src": "04.mp4",
+   "in": 4.5,
+   "beats": 4,
+   "speed": 1.3,
+   "note": "selfie na rua"
+  },
+  {
+   "id": "r26",
+   "src": "53.mp4",
+   "in": 1.0,
+   "beats": 4,
+   "speed": 0.5,
+   "note": "show em câmera lenta"
+  },
+  {
+   "id": "r27",
+   "src": "33.mp4",
+   "in": 3.5,
+   "beats": 4,
+   "speed": 1.2,
+   "note": "óculos de sol"
+  },
+  {
+   "id": "p01",
+   "photo": "35.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p02",
+   "photo": "37.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p03",
+   "photo": "38.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p04",
+   "photo": "36.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p05",
+   "photo": "24.jpg",
+   "beats": 2
+  },
+  {
+   "id": "r28",
+   "src": "07.mp4",
+   "in": 4.0,
+   "beats": 4,
+   "speed": 1.3,
+   "note": "risadas no ônibus"
+  },
+  {
+   "id": "p06",
+   "photo": "46.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p07",
+   "photo": "30.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p08",
+   "photo": "48.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p09",
+   "photo": "21.jpg",
+   "beats": 2
+  },
+  {
+   "id": "p10",
+   "photo": "58.jpg",
+   "beats": 2
+  },
+  {
+   "id": "r29",
+   "src": "49.mp4",
+   "in": 9.0,
+   "beats": 4,
+   "speed": 1.2,
+   "note": "tchau no carro"
+  },
+  {
+   "id": "r30",
+   "src": "11.mp4",
+   "in": 3.0,
+   "beats": 4,
+   "speed": 2.5,
+   "note": "patinete ao entardecer"
+  },
+  {
+   "id": "r31",
+   "src": "47.mp4",
+   "in": 6.5,
+   "beats": 4,
+   "speed": 2,
+   "note": "batata frita"
+  },
+  {
+   "id": "r32",
+   "src": "18.mp4",
+   "in": 30.0,
+   "beats": 4,
+   "speed": 2,
+   "note": "deitado no chão"
+  },
+  {
+   "id": "r33",
+   "src": "31.mp4",
+   "in": 6.0,
+   "beats": 4,
+   "speed": 1.5,
+   "fit": "contain",
+   "note": "dança na sala"
+  },
+  {
+   "id": "r34",
+   "src": "55.mp4",
+   "in": 2.4,
+   "beats": 2,
+   "speed": 1,
+   "note": "capacete"
+  },
+  {
+   "id": "r35",
+   "src": "19.mp4",
+   "in": 52.0,
+   "beats": 2,
+   "speed": 1,
+   "note": "festival"
+  },
+  {
+   "id": "r36",
+   "src": "23.mp4",
+   "in": 11.0,
+   "beats": 4,
+   "speed": 1,
+   "note": "pulo na piscina"
+  },
+  {
+   "id": "r37",
+   "src": "26.mp4",
+   "in": 20.0,
+   "beats": 4,
+   "speed": 0.75,
+   "fit": "contain",
+   "rotate": -90,
+   "note": "selfie em grupo"
+  },
+  {
+   "id": "r38",
+   "src": "53.mp4",
+   "in": 16.5,
+   "beats": 4,
+   "speed": 1,
+   "note": "rostos no show"
+  },
+  {
+   "id": "r39",
+   "src": "57.mp4",
+   "in": 1.0,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "r40",
+   "src": "12.mp4",
+   "in": 3.0,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "r41",
+   "src": "09.mp4",
+   "in": 2.2,
+   "beats": 1,
+   "speed": 2,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "r42",
+   "src": "13.mp4",
+   "in": 3.0,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "r43",
+   "src": "52.mp4",
+   "in": 3.5,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "r44",
+   "src": "19.mp4",
+   "in": 35.0,
+   "beats": 1,
+   "speed": 2,
+   "note": "rápido"
+  },
+  {
+   "id": "r45",
+   "src": "06.mp4",
+   "in": 15.0,
+   "beats": 1,
+   "speed": 2,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "r46",
+   "src": "01.mp4",
+   "in": 38.5,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "r47",
+   "src": "23.mp4",
+   "in": 16.7,
+   "beats": 8,
+   "speed": 0.5,
+   "bw": "full",
+   "note": "pausa: piscina à noite"
+  },
+  {
+   "id": "a01",
+   "src": "10.mp4",
+   "in": 1.6,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: tombo no escritório + risadas"
+  },
+  {
+   "id": "n01",
+   "src": "45.mp4",
+   "in": 1.0,
+   "beats": 4,
+   "speed": 1.5,
+   "fit": "contain",
+   "note": "jantar"
+  },
+  {
+   "id": "n02",
+   "src": "54.mp4",
+   "in": 2.0,
+   "beats": 4,
+   "speed": 2,
+   "note": "jogo no notebook"
+  },
+  {
+   "id": "a02",
+   "src": "07.mp4",
+   "in": 7.0,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: risadas no ônibus"
+  },
+  {
+   "id": "n03",
+   "src": "17.mp4",
+   "in": 9.0,
+   "beats": 4,
+   "speed": 2,
+   "note": "cozinhando"
+  },
+  {
+   "id": "n04",
+   "src": "02.mp4",
+   "in": 3.5,
+   "beats": 2,
+   "speed": 1,
+   "brighten": true,
+   "note": "noite"
+  },
+  {
+   "id": "n05",
+   "src": "03.mp4",
+   "in": 0.0,
+   "beats": 2,
+   "speed": 1,
+   "brighten": true,
+   "note": "grupo na grama"
+  },
+  {
+   "id": "a03",
+   "src": "01.mp4",
+   "in": 34.5,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: virando a garrafa"
+  },
+  {
+   "id": "p11",
+   "photo": "44.jpg",
+   "beats": 2,
+   "aspect": "3 / 4"
+  },
+  {
+   "id": "p12",
+   "photo": "50.jpg",
+   "beats": 2,
+   "aspect": "3 / 4"
+  },
+  {
+   "id": "p13",
+   "photo": "51.jpg",
+   "beats": 2
+  },
+  {
+   "id": "n06",
+   "src": "28.mp4",
+   "in": 22.0,
+   "beats": 4,
+   "speed": 1,
+   "brighten": true,
+   "note": "selfie no carro à noite"
+  },
+  {
+   "id": "a04",
+   "src": "33.mp4",
+   "in": 7.5,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: selfie de óculos"
+  },
+  {
+   "id": "n07",
+   "src": "34.mp4",
+   "in": 5.0,
+   "beats": 2,
+   "speed": 1,
+   "brighten": true,
+   "note": "show"
+  },
+  {
+   "id": "n08",
+   "src": "40.mp4",
+   "in": 15.5,
+   "beats": 4,
+   "speed": 1,
+   "brighten": true,
+   "note": "chegando em casa"
+  },
+  {
+   "id": "n09",
+   "src": "22.mp4",
+   "in": 0.0,
+   "beats": 4,
+   "speed": 1.5,
+   "note": "dança no carro"
+  },
+  {
+   "id": "n10",
+   "src": "32.mp4",
+   "in": 12.0,
+   "beats": 4,
+   "speed": 0.75,
+   "bw": "full",
+   "note": "selfie em câmera lenta"
+  },
+  {
+   "id": "a05",
+   "src": "43.mp4",
+   "in": 0.0,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: cantando na selfie"
+  },
+  {
+   "id": "a06",
+   "src": "23.mp4",
+   "in": 0.0,
+   "beats": 8,
+   "speed": 1,
+   "audio": true,
+   "note": "SOM: gritaria na piscina"
+  },
+  {
+   "id": "q01",
+   "src": "04.mp4",
+   "in": 16.5,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "q02",
+   "src": "15.mp4",
+   "in": 20.5,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "q03",
+   "src": "20.mp4",
+   "in": 4.6,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "q04",
+   "src": "29.mp4",
+   "in": 2.5,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "q05",
+   "src": "47.mp4",
+   "in": 1.6,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "q06",
+   "src": "49.mp4",
+   "in": 13.0,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "q07",
+   "src": "11.mp4",
+   "in": 13.5,
+   "beats": 1,
+   "speed": 1,
+   "note": "rápido"
+  },
+  {
+   "id": "q08",
+   "src": "16.mp4",
+   "in": 19.5,
+   "beats": 1,
+   "speed": 1,
+   "bw": "full",
+   "note": "rápido"
+  },
+  {
+   "id": "r48",
+   "src": "26.mp4",
+   "in": 14.0,
+   "beats": 8,
+   "speed": 0.5,
+   "bw": "out",
+   "fit": "contain",
+   "rotate": -90,
+   "note": "foto em grupo, volta a cor"
+  },
+  {
+   "id": "r49",
+   "src": "14.mp4",
+   "in": 5.0,
+   "beats": 8,
+   "speed": 0.5,
+   "note": "pôr do sol, final"
+  }
+ ]
 }

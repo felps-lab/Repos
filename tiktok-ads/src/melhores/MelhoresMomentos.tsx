@@ -160,7 +160,7 @@ const ClipView: React.FC<{readonly clip: Clip; readonly section: string}> = ({cl
   );
 };
 
-export const PhotoView: React.FC<{readonly file: string}> = ({file}) => {
+export const PhotoView: React.FC<{readonly file: string; readonly aspect?: string}> = ({file, aspect = '4 / 3'}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
   const tilt = (random(file) - 0.5) * 8;
@@ -175,7 +175,7 @@ export const PhotoView: React.FC<{readonly file: string}> = ({file}) => {
           position: 'absolute',
           left: 70,
           right: 70,
-          top: 470,
+          top: aspect === '4 / 3' ? 470 : 230,
           padding: '26px 26px 120px',
           background: '#fbf7ee',
           boxShadow: '0 40px 80px rgba(0,0,0,0.6)',
@@ -184,7 +184,7 @@ export const PhotoView: React.FC<{readonly file: string}> = ({file}) => {
           opacity: interpolate(frame, [0, 3], [0, 1], clamp),
         }}
       >
-        <div style={{width: '100%', aspectRatio: '4 / 3', overflow: 'hidden'}}>
+        <div style={{width: '100%', aspectRatio: aspect, overflow: 'hidden', maxHeight: 1100}}>
           <Img
             src={staticFile(`melhores/${file}`)}
             style={{width: '100%', height: '100%', objectFit: 'cover', scale: interpolate(frame, [0, durationInFrames], [1, 1.08])}}

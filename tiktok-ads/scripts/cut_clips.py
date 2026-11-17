@@ -52,6 +52,9 @@ def build(clip, beat, extra=0.0):
     else:
         frame = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}"
     chain.append(frame)
+    if clip.get("brighten"):
+        # lift dark night footage and calm the noise that brightening reveals
+        chain.append("hqdn3d=3:3:6:6,eq=gamma=1.55:brightness=0.03:saturation=1.15")
 
     # Effective output frame rate if we only stretch time: fps_in * speed.
     if speed < 1 and fps_in * speed < FPS - 1:
@@ -71,6 +74,14 @@ def build(clip, beat, extra=0.0):
         str(out),
     ]
     subprocess.run(cmd, check=True)
+    if clip.get("audio"):
+        # original sound for "audio moments" (clip must play at speed 1)
+        subprocess.run([
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+            "-ss", f"{clip['in']:.3f}", "-t", f"{out_dur:.4f}", "-i", str(src), "-vn",
+            "-af", "highpass=f=80,loudnorm=I=-15:TP=-1.5:LRA=11,afade=t=in:d=0.05",
+            "-ar", "48000", "-ac", "2", str(OUT / f"{clip['id']}.wav"),
+        ], check=True)
     return out, out_dur, fps_in
 
 

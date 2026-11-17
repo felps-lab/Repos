@@ -10,7 +10,7 @@ import {DateStamp, dateFor, Grain, LightLeak, PhotoView} from './MelhoresMomento
 /* Beat grid measured from the song (140 BPM, first beat at 0.081 s)   */
 /* ------------------------------------------------------------------ */
 
-type Clip = {id: string; beats: number; src?: string; photo?: string; bw?: 'none' | 'full' | 'out' | 'in'; note?: string};
+type Clip = {id: string; beats: number; src?: string; photo?: string; aspect?: string; audio?: boolean; bw?: 'none' | 'full' | 'out' | 'in'; note?: string};
 
 const FPS = 30;
 const {period, offset, beatsPerBar} = edl.grid;
@@ -34,7 +34,11 @@ const sectionAtBeat = (beat: number) => {
   const bar = beat / beatsPerBar;
   return edl.sections.find((s) => bar >= s.fromBar && bar < s.fromBar + s.bars)?.name ?? 'final';
 };
-const ENERGY = new Set(['subida', 'dia', 'noite', 'fotos', 'mix', 'rapido']);
+const ENERGY = new Set(['subida', 'dia', 'noite', 'fotos', 'mix', 'rapido', 'resenha', 'resenha2', 'hit', 'energia']);
+const CALM = new Set(['pausa', 'pausa2', 'final', 'abertura']);
+// Frames where a clip plays its own sound and the song steps back.
+const AUDIO_RANGES = timeline.filter((t) => t.clip.audio).map((t) => [t.from, t.from + t.dur] as const);
+const inAudio = (f: number) => AUDIO_RANGES.some(([a, b]) => f >= a && f < b);
 const DROP_FRAMES = edl.drops.map(barFrame);
 
 /* ------------------------------------------------------------------ */
@@ -53,15 +57,16 @@ const Shot: React.FC<{readonly clip: Clip; readonly section: string; readonly in
   const grade = `grayscale(${gray}) contrast(${1.04 + gray * 0.12}) sepia(${0.12 * (1 - gray)}) saturate(${1 + 0.15 * (1 - gray)})`;
 
   const energetic = ENERGY.has(section);
-  const punch = energetic ? interpolate(frame, [0, 6], [section === 'rapido' ? 1.14 : 1.08, 1], {...clamp, easing: Easing.out(Easing.cubic)}) : 1;
+  const rapid = clip.beats === 1;
+  const punch = energetic ? interpolate(frame, [0, 6], [rapid ? 1.14 : 1.08, 1], {...clamp, easing: Easing.out(Easing.cubic)}) : 1;
   const flash =
-    section === 'rapido'
+    rapid
       ? interpolate(frame, [0, 4], [0.75, 0], clamp)
       : section === 'subida'
         ? interpolate(frame, [0, 5], [0.25 + index * 0.08, 0], clamp)
         : 0;
   const dip =
-    section === 'pausa' || section === 'final' || section === 'abertura'
+    CALM.has(section)
       ? Math.max(interpolate(frame, [0, 10], [section === 'abertura' ? 1 : 0.8, 0], clamp), interpolate(frame, [durationInFrames - 5, durationInFrames], [0, 0.5], clamp))
       : 0;
   const drift = energetic ? 1 : interpolate(frame, [0, durationInFrames], [1, 1.07]);
@@ -72,10 +77,11 @@ const Shot: React.FC<{readonly clip: Clip; readonly section: string; readonly in
         {clip.src ? (
           <Video src={staticFile(`melhores/${edl.clipsDir}/${clip.id}.mp4`)} muted objectFit="cover" style={{width: '100%', height: '100%'}} />
         ) : (
-          <PhotoView file={clip.photo!} />
+          <PhotoView file={clip.photo!} aspect={clip.aspect} />
         )}
       </AbsoluteFill>
-      {section !== 'rapido' ? <DateStamp text={dateFor((clip.src ?? clip.photo)!)} /> : null}
+      {clip.audio ? <Audio name={`Som: ${clip.note ?? clip.id}`} src={staticFile(`melhores/${edl.clipsDir}/${clip.id}.wav`)} volume={(f) => interpolate(f, [0, 3, durationInFrames - 4, durationInFrames], [0, 1, 1, 0], clamp)} /> : null}
+      {!rapid ? <DateStamp text={dateFor((clip.src ?? clip.photo)!)} /> : null}
       {flash > 0 ? <AbsoluteFill style={{background: '#fff', opacity: flash}} /> : null}
       {dip > 0 ? <AbsoluteFill style={{background: '#000', opacity: dip}} /> : null}
     </AbsoluteFill>
@@ -91,14 +97,15 @@ const lastAtOrBefore = (list: number[], f: number) => {
   for (const x of list) if (x <= f) r = x;
   return r;
 };
-const BAR_FRAMES = Array.from({length: 49}, (_, i) => barFrame(i));
+const TOTAL_BEATS = timeline[timeline.length - 1].beat + timeline[timeline.length - 1].clip.beats;
+const BAR_FRAMES = Array.from({length: TOTAL_BEATS / beatsPerBar + 1}, (_, i) => barFrame(i));
 
 const Groove: React.FC<{readonly children: React.ReactNode}> = ({children}) => {
   const frame = useCurrentFrame();
   const beat = (frame / FPS - offset) / period;
   const energetic = ENERGY.has(sectionAtBeat(Math.max(0, beat)));
   const sinceBar = frame - lastAtOrBefore(BAR_FRAMES, frame);
-  const pulse = energetic ? 1 + 0.035 * Math.exp(-sinceBar / 3) : 1;
+  const pulse = energetic && !inAudio(frame) ? 1 + 0.035 * Math.exp(-sinceBar / 3) : 1;
   const sinceDrop = frame - lastAtOrBefore(DROP_FRAMES, frame);
   const shaking = sinceDrop >= 0 && sinceDrop < 10;
   const amp = shaking ? 22 * (1 - sinceDrop / 10) : 0;
@@ -187,7 +194,12 @@ export const ResenhaEdit: React.FC<{readonly withMusic?: boolean}> = ({withMusic
         <Audio
           name="Resenha do Arrocha"
           src={staticFile(edl.song)}
-          volume={(f) => interpolate(f, [0, 4, durationInFrames - 70, durationInFrames - 4], [0, 1, 1, 0], clamp)}
+          volume={(f) => {
+            const fade = interpolate(f, [0, 4, durationInFrames - 70, durationInFrames - 4], [0, 1, 1, 0], clamp);
+            // duck under the clips that play their own sound, with short ramps on the beat
+            const duck = AUDIO_RANGES.reduce((v, [a, b]) => Math.min(v, interpolate(f, [a - 4, a + 2, b - 3, b + 3], [1, 0.18, 0.18, 1], clamp)), 1);
+            return fade * duck;
+          }}
         />
       ) : null}
     </AbsoluteFill>
