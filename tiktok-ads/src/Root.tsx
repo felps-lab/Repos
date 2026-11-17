@@ -4,6 +4,7 @@ import {frigideiraVoice} from './generated/frigideira';
 import {inversorVoice} from './generated/inversor';
 import {skincareVoice} from './generated/skincare';
 import {Inversor} from './inversor/Inversor';
+import {MELHORES_DURATION, MelhoresMomentos} from './melhores/MelhoresMomentos';
 import {
   calculateRetrospectivaMetadata,
   Retrospectiva,
@@ -70,6 +71,14 @@ export const RemotionRoot: React.FC = () => {
           despedida: 'Obrigado, 2026.',
           recado: 'que venha 2027',
         }}
+      />
+      <Composition
+        id="MelhoresMomentos"
+        component={MelhoresMomentos}
+        durationInFrames={MELHORES_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
       />
     </Folder>
   );
