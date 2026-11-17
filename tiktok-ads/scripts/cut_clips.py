@@ -1,6 +1,6 @@
 """Cut the highlight clips listed in src/melhores/edl.json.
 
-Usage: python scripts/cut_clips.py [clip_id ...]
+Usage: python scripts/cut_clips.py [--edl src/melhores/edl_resenha.json] [clip_id ...]
 
 Each clip is trimmed from public/melhores/<src>, rotated if needed, re-timed
 (speed > 1 = fast, < 1 = slow motion), framed to 1080x1920 and written as
@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MEDIA = ROOT / "public" / "melhores"
-OUT = MEDIA / "clips"
+OUT = MEDIA / "clips"  # overridden by the EDL's "clipsDir"
 W, H, FPS = 1080, 1920, 30
 
 
@@ -30,8 +30,9 @@ def src_fps(path: Path) -> float:
     return float(Fraction(r))
 
 
-def build(clip, beat):
-    out_dur = clip["beats"] * beat
+def build(clip, beat, extra=0.0):
+    # extra: lead-in before the first beat, plus a little padding so the edit never runs short
+    out_dur = clip["beats"] * beat + extra
     speed = clip.get("speed", 1)
     span = out_dur * speed
     src = MEDIA / clip["src"]
@@ -74,14 +75,23 @@ def build(clip, beat):
 
 
 def main():
-    edl = json.loads((ROOT / "src" / "melhores" / "edl.json").read_text())
-    beat = 60 / edl["bpm"]
-    only = set(sys.argv[1:])
+    global OUT
+    args = sys.argv[1:]
+    edl_path = ROOT / "src" / "melhores" / "edl.json"
+    if args[:1] == ["--edl"]:
+        edl_path, args = ROOT / args[1], args[2:]
+    edl = json.loads(edl_path.read_text())
+    grid = edl.get("grid")
+    beat = grid["period"] if grid else 60 / edl["bpm"]
+    lead = grid["offset"] if grid else 0.0
+    OUT = MEDIA / edl.get("clipsDir", "clips")
+    only = set(args)
     OUT.mkdir(parents=True, exist_ok=True)
-    for clip in edl["clips"]:
+    for i, clip in enumerate(edl["clips"]):
         if "src" not in clip or (only and clip["id"] not in only):
             continue
-        out, dur, fps_in = build(clip, beat)
+        extra = (lead if i == 0 else 0.0) + (0.12 if grid else 0.0)
+        out, dur, fps_in = build(clip, beat, extra)
         print(f"{clip['id']} {clip['src']} {fps_in:.1f}fps x{clip.get('speed', 1)} -> {dur:.2f}s  {clip.get('note', '')}", flush=True)
 
 

@@ -38,7 +38,7 @@ const sectionOf = (frame: number) => {
   return edl.sections.find((s) => bar >= s.fromBar && bar < s.fromBar + s.bars)?.name ?? 'final';
 };
 
-const dateFor = (file: string) => {
+export const dateFor = (file: string) => {
   const key = file.split('.')[0];
   const d = (dates as Record<string, string>)[key];
   return d ? d.split('/').join(' ') : '';
@@ -48,7 +48,7 @@ const dateFor = (file: string) => {
 /* Atmosphere                                                          */
 /* ------------------------------------------------------------------ */
 
-const Grain: React.FC = () => {
+export const Grain: React.FC = () => {
   const frame = useCurrentFrame();
   const seed = Math.floor(frame / 2) % 10;
   return (
@@ -65,7 +65,7 @@ const Grain: React.FC = () => {
   );
 };
 
-const LightLeak: React.FC = () => {
+export const LightLeak: React.FC = () => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{mixBlendMode: 'screen', pointerEvents: 'none', opacity: 0.55}}>
@@ -97,7 +97,7 @@ const LightLeak: React.FC = () => {
   );
 };
 
-const DateStamp: React.FC<{readonly text: string}> = ({text}) => (
+export const DateStamp: React.FC<{readonly text: string}> = ({text}) => (
   <div
     style={{
       position: 'absolute',
@@ -160,7 +160,7 @@ const ClipView: React.FC<{readonly clip: Clip; readonly section: string}> = ({cl
   );
 };
 
-const PhotoView: React.FC<{readonly file: string}> = ({file}) => {
+export const PhotoView: React.FC<{readonly file: string}> = ({file}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
   const tilt = (random(file) - 0.5) * 8;

@@ -5,6 +5,7 @@ import {inversorVoice} from './generated/inversor';
 import {skincareVoice} from './generated/skincare';
 import {Inversor} from './inversor/Inversor';
 import {MELHORES_DURATION, MelhoresMomentos} from './melhores/MelhoresMomentos';
+import {RESENHA_DURATION, ResenhaEdit} from './melhores/ResenhaEdit';
 import {
   calculateRetrospectivaMetadata,
   Retrospectiva,
@@ -79,6 +80,24 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="MelhoresMomentosResenha"
+        component={ResenhaEdit}
+        durationInFrames={RESENHA_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{withMusic: true}}
+      />
+      <Composition
+        id="MelhoresMomentosResenhaSemMusica"
+        component={ResenhaEdit}
+        durationInFrames={RESENHA_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{withMusic: false}}
       />
     </Folder>
   );
