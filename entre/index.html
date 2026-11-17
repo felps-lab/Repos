@@ -1,0 +1,1094 @@
+<title>Entre</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Entre: o jogo de palavras de 1 a 100.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<style>
+/* Layout: one-screen game. A yellow measuring tape (1 → 100) is the hero control;
+   the "ladder" of placed words is the reference list. Single dark look by choice. */
+:root {
+  --ink: #0f1330;
+  --panel: #181e45;
+  --panel-2: #20275a;
+  --line: #2e3772;
+  --fg: #f1f2ff;
+  --muted: #a3abdb;
+  --tape: #ffd23f;
+  --tape-deep: #e8b400;
+  --tape-ink: #231a00;
+  --cool: #53d6ff;
+  --hot: #ff6a4d;
+  --t-bull: #ffd23f;
+  --t-green: #4be08a;
+  --t-yellow: #ffe066;
+  --t-orange: #ff9f43;
+  --t-red: #ff5c5c;
+  --t-none: #59618f;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-num: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--ink);
+  background-image: radial-gradient(1200px 500px at 50% -10%, #232b6b 0%, transparent 60%);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--tape); outline-offset: 2px; border-radius: 6px; }
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- header ---------- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+}
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 34px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.logo .tape-mini {
+  display: inline-block;
+  width: 46px;
+  height: 18px;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(90deg, var(--tape-ink) 0 1.5px, transparent 1.5px 5px) bottom / 100% 6px no-repeat,
+    var(--tape);
+  transform: translateY(-3px) rotate(-6deg);
+}
+.logo small {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tools { display: flex; gap: 6px; align-items: center; }
+.icon-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.icon-btn:hover { background: var(--panel-2); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+.modes {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  align-self: center;
+}
+.modes button {
+  border: 0;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.modes button[aria-pressed="true"] { background: var(--tape); color: var(--tape-ink); }
+
+/* ---------- board ---------- */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 760px) { .board { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { .logo small { display: none; } }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ladder of placed words */
+.ladder-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+.theme-chip {
+  font-size: 13px; font-weight: 700;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--panel-2); color: var(--tape);
+  border: 1px solid var(--line);
+}
+.ladder {
+  list-style: none; margin: 0; padding: 0 0 0 18px;
+  position: relative;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ladder::before {
+  content: "";
+  position: absolute; left: 0; top: 4px; bottom: 4px; width: 8px; border-radius: 4px;
+  background: linear-gradient(var(--cool), var(--tape) 50%, var(--hot));
+}
+.ladder li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  min-width: 0;
+  transition: transform .25s ease, background .25s ease;
+}
+.ladder .num {
+  font-family: var(--font-num); font-weight: 800; font-size: 15px;
+  min-width: 42px; text-align: center;
+  padding: 3px 0; border-radius: 6px;
+  background: var(--tape); color: var(--tape-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ladder .word {
+  font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  letter-spacing: .3px; text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.ladder li.anchor { background: transparent; border: 1px solid var(--line); }
+.ladder li.anchor .num { background: var(--fg); }
+.ladder li.ghost { background: transparent; border: 2px dashed var(--tape); }
+.ladder li.ghost .num { background: transparent; color: var(--tape); border: 2px solid var(--tape); }
+.ladder li.ghost .word { color: var(--tape); }
+.ladder li.fresh { background: rgba(255, 210, 63, .2); box-shadow: inset 0 0 0 2px var(--tape); animation: pop .5s ease; }
+.ladder li .note { margin-left: auto; font-size: 13px; color: var(--muted); font-family: var(--font-num); white-space: nowrap; }
+@keyframes pop { 0% { transform: scale(.94); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+/* play area */
+.play { display: flex; flex-direction: column; gap: 14px; }
+.round-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pips { display: flex; gap: 6px; }
+.pip { width: 26px; height: 8px; border-radius: 4px; background: var(--line); }
+.pip.done { background: var(--tape); }
+.pip.now { background: var(--fg); }
+
+.word-card {
+  text-align: center;
+  padding: 22px 14px;
+  border-radius: var(--r);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+.word-card .q { color: var(--muted); font-weight: 600; }
+.word-card .big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(38px, 9vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+}
+.word-card .between { margin-top: 8px; color: var(--muted); font-size: 14px; }
+.word-card .between b { color: var(--fg); }
+
+/* measuring tape slider */
+.tape-wrap { position: relative; padding-top: 58px; }
+.readout {
+  position: absolute; top: 0;
+  translate: -50% 0;
+  font-family: var(--font-num); font-weight: 800; font-size: 34px;
+  line-height: 1;
+  padding: 6px 10px 8px;
+  border-radius: 10px;
+  background: var(--fg); color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.readout::after {
+  content: ""; position: absolute; left: 50%; bottom: -7px; translate: -50% 0;
+  border: 7px solid transparent; border-bottom: 0; border-top-color: var(--fg);
+}
+.tape {
+  position: relative;
+  height: 64px;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(90deg, var(--tape-ink) 0 2px, transparent 2px calc(100% / 10)) left top / calc(100% - 2px) 26px no-repeat,
+    repeating-linear-gradient(90deg, var(--tape-ink) 0 1px, transparent 1px calc(100% / 50)) left top / calc(100% - 1px) 13px no-repeat,
+    linear-gradient(var(--tape), var(--tape-deep));
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), 0 10px 30px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+.tape-labels {
+  position: absolute; left: 0; right: 0; bottom: 6px;
+  display: flex; justify-content: space-between;
+  padding: 0 4px;
+  font-family: var(--font-num); font-weight: 700; font-size: 12px; color: var(--tape-ink);
+  pointer-events: none;
+}
+.tape-marks { position: absolute; inset: 0; pointer-events: none; }
+.tape-marks i {
+  position: absolute; top: 0; bottom: 0; width: 3px; translate: -50% 0;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.tape-marks i.truth { background: var(--t-green); width: 5px; }
+.tape input[type="range"] {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; background: transparent; appearance: none; -webkit-appearance: none;
+  cursor: grab;
+}
+.tape input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 6px; height: 64px; border-radius: 3px;
+  background: var(--hot); box-shadow: 0 0 0 3px rgba(255,255,255,.85);
+}
+.tape input[type="range"]::-moz-range-thumb {
+  width: 6px; height: 64px; border: 0; border-radius: 3px;
+  background: var(--hot); box-shadow: 0 0 0 3px rgba(255,255,255,.85);
+}
+.tape input[type="range"]::-moz-range-track { background: transparent; }
+.tape input[type="range"]:disabled { cursor: default; }
+.ends { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 13px; font-weight: 700; }
+.ends span:first-child { color: var(--cool); }
+.ends span:last-child { color: var(--hot); text-align: right; }
+
+.controls { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 8px; }
+.nudge {
+  border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2);
+  font-family: var(--font-num); font-weight: 800; font-size: 22px;
+}
+.primary {
+  border: 0; border-radius: 12px; padding: 15px 18px;
+  background: var(--tape); color: var(--tape-ink);
+  font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .3px;
+  box-shadow: 0 6px 0 var(--tape-deep);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.primary:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--tape-deep); }
+.primary:disabled { opacity: .45; cursor: not-allowed; }
+.ghost-btn {
+  border: 1px solid var(--line); background: var(--panel-2); border-radius: 12px;
+  padding: 12px 16px; font-weight: 700;
+}
+
+/* result banner */
+.result {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--r);
+  background: var(--panel-2); border: 2px solid var(--tier, var(--line));
+  animation: pop .45s ease;
+}
+.result .emo { font-size: 34px; line-height: 1; }
+.result .tier { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: var(--tier); }
+.result .detail { color: var(--muted); font-size: 14px; }
+.result .pts { font-family: var(--font-num); font-weight: 800; font-size: 28px; color: var(--tier); }
+
+/* end screen */
+.end { text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.end .score { font-family: var(--font-num); font-weight: 800; font-size: 64px; line-height: 1; color: var(--tape); }
+.end .score small { font-size: 22px; color: var(--muted); }
+.end .title { font-family: var(--font-display); font-weight: 800; font-size: 28px; }
+.end .emojis { font-size: 30px; letter-spacing: 4px; }
+.end .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.countdown { color: var(--muted); font-size: 14px; }
+.countdown b { font-family: var(--font-num); color: var(--fg); }
+
+/* party mode */
+.party-setup { display: flex; flex-direction: column; gap: 14px; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; }
+.pair label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.pair input, .clue-input {
+  width: 100%;
+  border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2);
+  padding: 12px 12px; font-family: var(--font-display); font-weight: 700; font-size: 20px; text-transform: uppercase;
+}
+.pair .arrow { font-family: var(--font-num); font-weight: 800; color: var(--muted); padding-bottom: 12px; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg button { border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 8px 14px; font-weight: 700; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--ink); }
+.secret {
+  text-align: center; padding: 22px 16px; border-radius: var(--r);
+  background: var(--panel-2); border: 2px dashed var(--line);
+  display: flex; flex-direction: column; gap: 12px; align-items: center;
+}
+.secret .n { font-family: var(--font-num); font-weight: 800; font-size: 96px; line-height: 1; color: var(--tape); }
+.hint-text { color: var(--muted); font-size: 14px; max-width: 46ch; }
+
+/* overlays */
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  background: rgba(5, 7, 20, .72);
+  display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.sheet {
+  width: min(520px, 100%); max-height: 100%; overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.sheet h2 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 26px; text-wrap: balance; }
+.sheet p { margin: 0; color: var(--muted); }
+.sheet ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.tiers { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 12px; font-size: 15px; }
+.tiers .p { font-family: var(--font-num); font-weight: 800; text-align: right; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats div { background: var(--panel-2); border-radius: 12px; padding: 10px 4px; }
+.stats b { display: block; font-family: var(--font-num); font-size: 26px; }
+.stats span { font-size: 12px; color: var(--muted); }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); translate: -50% 0; z-index: 30;
+  background: var(--fg); color: var(--ink); font-weight: 700;
+  padding: 10px 16px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+.share-fallback { width: 100%; min-height: 110px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); padding: 10px; font-family: var(--font-num); }
+
+canvas.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="logo"><span class="tape-mini" aria-hidden="true"></span>Entre <small>de 1 a 100</small></div>
+    <div class="tools">
+      <button class="icon-btn" id="btn-help" aria-label="Como jogar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.4"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-stats" aria-label="Estatísticas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-sound" aria-label="Som ligado" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path id="snd-wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path id="snd-x" d="M16 9.5l5 5M21 9.5l-5 5" hidden/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="modes" role="group" aria-label="Modo de jogo">
+    <button id="mode-daily" aria-pressed="true">Desafio do dia</button>
+    <button id="mode-party" aria-pressed="false">Modo festa</button>
+  </div>
+
+  <main id="view"></main>
+</div>
+
+<div class="overlay" id="ov-help" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <h2 id="help-title">Como jogar</h2>
+    <p>Duas palavras marcam as pontas da régua: uma vale <b>1</b> e a outra vale <b>100</b>. Toda palavra nova mora em algum ponto entre elas.</p>
+    <ol>
+      <li>Leia a palavra da rodada e compare com as que já estão na lista.</li>
+      <li>Arraste a fita até o número onde você acha que ela fica.</li>
+      <li>Toque em <b>Cravar</b>. Quanto mais perto, mais pontos.</li>
+    </ol>
+    <div class="tiers" id="tier-table"></div>
+    <p><b>Desafio do dia:</b> 5 palavras, as mesmas para todo mundo. Máximo de 500 pontos.</p>
+    <p><b>Modo festa:</b> para jogar em grupo num celular só. Quem dá a dica vê um número secreto e fala uma palavra que mora ali. O grupo tenta acertar o número.</p>
+    <button class="primary" data-close>Bora jogar</button>
+  </div>
+</div>
+
+<div class="overlay" id="ov-stats" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <h2 id="stats-title">Suas estatísticas</h2>
+    <div class="stats" id="stats-grid"></div>
+    <p id="stats-note">Os dados ficam só neste navegador.</p>
+    <button class="ghost-btn" data-close>Fechar</button>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   Content
+   ===================================================================== */
+
+// Daily puzzles: anchors a (=1) and b (=100), a theme, two fixed reference words,
+// and five words to place. Numbers are the editorial "truth".
+const PUZZLES = [
+  {a:'GELO', b:'VULCÃO', tema:'temperatura', fixos:[['GELADEIRA',10],['PRAIA',62]], rodadas:[['SAUNA',80],['SORVETE',6],['PRIMAVERA',45],['FORNO',90],['CHUVA',30]]},
+  {a:'FORMIGA', b:'BALEIA', tema:'tamanho', fixos:[['GATO',20],['ELEFANTE',90]], rodadas:[['LEÃO',45],['ABELHA',3],['TUBARÃO',75],['RATO',8],['CAVALO',55]]},
+  {a:'SUSSURRO', b:'TROVÃO', tema:'volume', fixos:[['CONVERSA',30],['BUZINA',75]], rodadas:[['RISADA',40],['BIBLIOTECA',5],['FOGOS',95],['LIQUIDIFICADOR',60],['SHOW',88]]},
+  {a:'SEGUNDO', b:'SÉCULO', tema:'duração', fixos:[['FILME',22],['FÉRIAS',50]], rodadas:[['GRAVIDEZ',60],['ESPIRRO',2],['VIDA',95],['BANHO',12],['FACULDADE',75]]},
+  {a:'DESERTO', b:'OCEANO', tema:'quanta água', fixos:[['CACTO',6],['PISCINA',70]], rodadas:[['BANHEIRA',50],['LAGO',82],['GARRAFA',25],['AREIA',3],['CACHOEIRA',88]]},
+  {a:'BEBÊ', b:'VOVÓ', tema:'idade', fixos:[['ADOLESCENTE',18],['APOSENTADORIA',85]], rodadas:[['CASAMENTO',40],['CHUPETA',2],['BENGALA',95],['VESTIBULAR',22],['CALVÍCIE',60]]},
+  {a:'LESMA', b:'FOGUETE', tema:'velocidade', fixos:[['BICICLETA',30],['AVIÃO',90]], rodadas:[['GUEPARDO',60],['TARTARUGA',3],['TREM-BALA',80],['PATINETE',20],['CAVALO',42]]},
+  {a:'CENTAVO', b:'MANSÃO', tema:'preço', fixos:[['PIZZA',20],['CARRO',75]], rodadas:[['CELULAR',45],['CHICLETE',3],['IATE',96],['CINEMA',14],['MOTO',60]]},
+  {a:'AMANHECER', b:'MADRUGADA', tema:'hora do dia', fixos:[['ALMOÇO',30],['JANTAR',65]], rodadas:[['PÔR DO SOL',55],['CAFÉ DA MANHÃ',6],['BALADA',90],['SESTA',38],['NOVELA',72]]},
+  {a:'RÉVEILLON', b:'NATAL', tema:'calendário', fixos:[['CARNAVAL',12],['FESTA JUNINA',45]], rodadas:[['PÁSCOA',27],['VOLTA ÀS AULAS',8],['DIA DAS CRIANÇAS',78],['HALLOWEEN',83],['BLACK FRIDAY',90]]},
+  {a:'CALMA', b:'PÂNICO', tema:'nervosismo', fixos:[['PROVA',45],['ENTREVISTA',55]], rodadas:[['FILME DE TERROR',75],['MEDITAÇÃO',2],['TRÂNSITO',35],['PARAQUEDAS',90],['DOMINGO',10]]},
+  {a:'PENA', b:'PIANO', tema:'peso', fixos:[['LIVRO',15],['PESSOA',60]], rodadas:[['MELANCIA',30],['FOLHA',3],['MOTO',88],['CACHORRO',40],['GELADEIRA',75]]},
+  {a:'GOTA', b:'TSUNAMI', tema:'força da água', fixos:[['CHUVEIRO',25],['ENCHENTE',80]], rodadas:[['CACHOEIRA',60],['ORVALHO',3],['TEMPESTADE',70],['GAROA',12],['ONDA',50]]},
+  {a:'ESCURIDÃO', b:'SOL', tema:'brilho', fixos:[['VELA',20],['ESTÁDIO',80]], rodadas:[['LUA',30],['VAGA-LUME',8],['RELÂMPAGO',90],['ABAJUR',38],['FLASH',70]]},
+  {a:'ALGODÃO', b:'DIAMANTE', tema:'dureza', fixos:[['BORRACHA',20],['TIJOLO',60]], rodadas:[['OSSO',52],['PÃO',8],['GRANITO',88],['MADEIRA',42],['FERRO',80]]},
+  {a:'VIZINHO', b:'LUA', tema:'distância', fixos:[['PADARIA',8],['EUROPA',60]], rodadas:[['LITORAL',30],['ESCOLA',15],['ESTAÇÃO ESPACIAL',88],['ARGENTINA',45],['JAPÃO',75]]},
+  {a:'LIMÃO', b:'BRIGADEIRO', tema:'doçura', fixos:[['LARANJA',40],['BOLO',80]], rodadas:[['MAÇÃ',52],['CAFÉ',8],['MEL',90],['TOMATE',15],['SORVETE',72]]},
+  {a:'SOLIDÃO', b:'MULTIDÃO', tema:'quanta gente', fixos:[['FAMÍLIA',20],['ESCOLA',50]], rodadas:[['CASAMENTO',40],['CASAL',6],['ESTÁDIO',88],['TIME',25],['SHOPPING',65]]},
+  {a:'RESPIRAR', b:'EVEREST', tema:'dificuldade', fixos:[['BICICLETA',20],['MARATONA',75]], rodadas:[['DIRIGIR',35],['AMARRAR O TÊNIS',5],['CUBO MÁGICO',50],['NADAR',28],['FALAR JAPONÊS',70]]},
+  {a:'PIJAMA', b:'SMOKING', tema:'formalidade', fixos:[['BERMUDA',15],['TERNO',85]], rodadas:[['CAMISA POLO',45],['PANTUFA',3],['GRAVATA',80],['JEANS',30],['BLAZER',70]]},
+];
+
+// Words for random party pairs. Unrelated pairs are the fun part.
+const PARTY_WORDS = ['CLOROFILA','VIAGEM','SABÃO','DISNEY','MOCHILA','ASTRONAUTA','PIPOCA','SEGUNDA-FEIRA','DINOSSAURO','WI-FI','FÉRIAS','VOVÓ','CHUVA','PIZZA','CASAMENTO','PRAIA','ELEVADOR','ACADEMIA','CAFÉ','FORMIGA','VULCÃO','ALIENÍGENA','BOLETO','ABRAÇO','GUARDA-CHUVA','KARAOKÊ','BRIGADEIRO','SAUDADE','CARNAVAL','FUTEBOL','BIBLIOTECA','TATUAGEM','FOGUETE','PANTUFA','DENTISTA','MONTANHA-RUSSA','SUSHI','CACHORRO','ESPELHO','PROVA','NOVELA','TROVÃO','PÔR DO SOL','PIJAMA','FOTOSSÍNTESE','AVIÃO','LAVANDA','ROBÔ','PIRATA','GELADEIRA','CHOCOLATE','SEREIA','CACTO','FANTASMA','ROLÊ','DOMINGO','SUPERMERCADO','UNICÓRNIO','INVERNO','HOSPITAL'];
+
+const TIERS = [
+  {max: 0,  pts: 100, emo: '🎯', name: 'Na mosca!',       color: 'var(--t-bull)'},
+  {max: 3,  pts: 80,  emo: '🟩', name: 'Quase perfeito',  color: 'var(--t-green)'},
+  {max: 8,  pts: 50,  emo: '🟨', name: 'Perto',           color: 'var(--t-yellow)'},
+  {max: 15, pts: 25,  emo: '🟧', name: 'Morno',           color: 'var(--t-orange)'},
+  {max: 25, pts: 10,  emo: '🟥', name: 'Longe',           color: 'var(--t-red)'},
+  {max: 99, pts: 0,   emo: '⬛', name: 'Fora da régua',   color: 'var(--t-none)'},
+];
+const tierFor = (d) => TIERS.find((t) => d <= t.max);
+
+const TITLES = [
+  [450, 'Régua humana'],
+  [350, 'Sintonia fina'],
+  [250, 'Bom de olho'],
+  [150, 'Chutômetro calibrando'],
+  [0,   'Fora da escala'],
+];
+
+/* =====================================================================
+   Storage (safe)
+   ===================================================================== */
+const store = {
+  get(k, fallback) { try { const v = localStorage.getItem('entre:' + k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  set(k, v) { try { localStorage.setItem('entre:' + k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
+};
+
+/* =====================================================================
+   Sound: everything synthesized with Web Audio (no files)
+   ===================================================================== */
+const sfx = (() => {
+  let ctx = null;
+  let master = null;
+  let on = store.get('sound', true);
+  let lastTick = 0;
+  const ensure = () => {
+    if (!on) return null;
+    try {
+      if (!ctx) {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        master = ctx.createGain();
+        master.gain.value = 0.55;
+        master.connect(ctx.destination);
+      }
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    } catch { return null; }
+  };
+  const tone = (freq, dur, {type = 'sine', gain = 0.2, when = 0, to = null, attack = 0.005} = {}) => {
+    const c = ensure(); if (!c) return;
+    const t = c.currentTime + when;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(master);
+    o.start(t); o.stop(t + dur + 0.02);
+  };
+  const noise = (dur, {from = 400, to = 4000, gain = 0.18, when = 0} = {}) => {
+    const c = ensure(); if (!c) return;
+    const t = c.currentTime + when;
+    const buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + dur * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(master);
+    src.start(t); src.stop(t + dur);
+  };
+  const notes = (seq, step, opts) => seq.forEach((f, i) => tone(f, opts.dur || 0.25, {...opts, when: i * step}));
+  return {
+    get on() { return on; },
+    toggle() { on = !on; store.set('sound', on); if (on) this.tap(); return on; },
+    unlock() { ensure(); },
+    // Pitch follows the tape: low numbers sound low, high numbers sound high.
+    tick(v) {
+      const now = performance.now(); if (now - lastTick < 28) return; lastTick = now;
+      tone(180 + v * 7, 0.035, {type: 'triangle', gain: 0.07});
+    },
+    tap() { tone(520, 0.06, {type: 'square', gain: 0.05}); },
+    lock() { tone(330, 0.09, {type: 'triangle', gain: 0.16}); tone(660, 0.14, {type: 'triangle', gain: 0.14, when: 0.07}); },
+    reveal() { noise(0.35, {from: 300, to: 3500, gain: 0.12}); },
+    flip() { noise(0.18, {from: 2000, to: 600, gain: 0.1}); tone(880, 0.12, {type: 'sine', gain: 0.08, when: 0.12}); },
+    score(tier) {
+      const i = TIERS.indexOf(tier);
+      if (i === 0) { notes([523, 659, 784, 1047], 0.08, {type: 'triangle', gain: 0.16, dur: 0.3}); notes([1568, 2093], 0.06, {type: 'sine', gain: 0.06, dur: 0.4, when: 0.35}); }
+      else if (i === 1) notes([587, 880], 0.09, {type: 'triangle', gain: 0.15, dur: 0.25});
+      else if (i === 2) notes([523, 659], 0.1, {type: 'triangle', gain: 0.13, dur: 0.22});
+      else if (i === 3) tone(440, 0.25, {type: 'triangle', gain: 0.12});
+      else tone(300, 0.45, {type: 'sawtooth', gain: 0.06, to: 160});
+    },
+    finish(total) {
+      const good = total >= 250;
+      const seq = good ? [392, 523, 659, 784, 1047] : [392, 349, 330, 262];
+      notes(seq, 0.12, {type: 'triangle', gain: 0.14, dur: 0.35});
+    },
+  };
+})();
+
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $ = (sel, el = document) => el.querySelector(sel);
+const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const clampN = (n) => Math.max(1, Math.min(100, Math.round(n)));
+const pos = (v) => `calc(${((v - 1) / 99) * 100}% + ${3 - ((v - 1) / 99) * 6}px)`; // matches the 6px range thumb
+
+const EPOCH = new Date(2026, 10, 17); // puzzle #1 = 17/11/2026
+const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+const dayIndex = () => {
+  const d = new Date(); d.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((d - EPOCH) / 86400000));
+};
+
+let toastTimer = 0;
+const toast = (msg) => {
+  document.querySelectorAll('.toast').forEach((t) => t.remove());
+  const t = h(`<div class="toast" role="status">${esc(msg)}</div>`);
+  document.body.append(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.remove(), 2200);
+};
+
+const confetti = () => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = h('<canvas class="confetti"></canvas>');
+  document.body.append(c);
+  const ctx = c.getContext('2d');
+  const W = (c.width = innerWidth), H = (c.height = innerHeight);
+  const colors = ['#ffd23f', '#53d6ff', '#ff6a4d', '#4be08a', '#f1f2ff'];
+  const parts = Array.from({length: 110}, () => ({
+    x: W / 2 + (Math.random() - 0.5) * 120, y: H * 0.35,
+    vx: (Math.random() - 0.5) * 12, vy: -Math.random() * 12 - 4,
+    s: 4 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+    c: colors[Math.floor(Math.random() * colors.length)],
+  }));
+  let frame = 0;
+  const step = () => {
+    ctx.clearRect(0, 0, W, H);
+    parts.forEach((p) => {
+      p.vy += 0.35; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore();
+    });
+    if (++frame < 120) requestAnimationFrame(step); else c.remove();
+  };
+  step();
+};
+
+/* =====================================================================
+   Shared pieces: ladder + tape
+   ===================================================================== */
+function ladderHTML(session, {ghost = null, fresh = null} = {}) {
+  const items = [
+    {w: session.a, n: 1, kind: 'anchor'},
+    {w: session.b, n: 100, kind: 'anchor'},
+    ...session.fixos.map(([w, n]) => ({w, n, kind: 'fixo'})),
+    ...session.placed.map((p) => ({w: p.word, n: p.n, kind: 'placed', note: p.note})),
+  ];
+  if (ghost) items.push({w: ghost.word, n: ghost.n, kind: 'ghost'});
+  items.sort((x, y) => x.n - y.n || (x.kind === 'ghost' ? 1 : -1));
+  return items.map((it) => `
+    <li class="${it.kind === 'anchor' ? 'anchor' : ''} ${it.kind === 'ghost' ? 'ghost' : ''} ${fresh && it.w === fresh && it.kind === 'placed' ? 'fresh' : ''}">
+      <span class="num">${it.kind === 'ghost' ? it.n + '?' : it.n}</span>
+      <span class="word">${esc(it.w)}</span>
+      ${it.note ? `<span class="note">${esc(it.note)}</span>` : ''}
+    </li>`).join('');
+}
+
+function tapeHTML(id, value, {disabled = false, marks = []} = {}) {
+  return `
+    <div class="tape-wrap">
+      <div class="readout" id="${id}-readout" style="left:${pos(value)}">${value}</div>
+      <div class="tape">
+        <div class="tape-marks">${marks.map((m) => `<i class="${m.cls || ''}" style="left:${pos(m.n)}"></i>`).join('')}</div>
+        <div class="tape-labels"><span>1</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+        <input type="range" id="${id}" min="1" max="100" step="1" value="${value}" aria-label="Número na régua" ${disabled ? 'disabled' : ''}>
+      </div>
+    </div>`;
+}
+
+/* =====================================================================
+   Game session (used by both modes)
+   ===================================================================== */
+function scoreRound(guess, truth) {
+  const d = Math.abs(guess - truth);
+  const tier = tierFor(d);
+  return {d, tier, pts: tier.pts};
+}
+
+function totalOf(results) { return results.reduce((s, r) => s + r.pts, 0); }
+function emojiRow(results) { return results.map((r) => tierFor(r.d).emo).join(''); }
+function titleFor(total, rounds) {
+  const scaled = (total / Math.max(1, rounds)) * 5;
+  return TITLES.find(([min]) => scaled >= min)[1];
+}
+
+/* =====================================================================
+   DAILY MODE
+   ===================================================================== */
+function dailyState() {
+  const idx = dayIndex();
+  const puzzle = PUZZLES[idx % PUZZLES.length];
+  const key = todayKey();
+  const saved = store.get('daily', null);
+  const results = saved && saved.key === key ? saved.results : [];
+  return {idx, number: idx + 1, puzzle, key, results};
+}
+
+function saveDaily(st) { store.set('daily', {key: st.key, results: st.results}); }
+
+function recordStats(total) {
+  const s = store.get('stats', {played: 0, sum: 0, best: 0, streak: 0, maxStreak: 0, lastDay: -1, bulls: 0});
+  const di = dayIndex();
+  if (s.lastDay === di) return;
+  s.played += 1; s.sum += total; s.best = Math.max(s.best, total);
+  s.streak = s.lastDay === di - 1 ? s.streak + 1 : 1;
+  s.maxStreak = Math.max(s.maxStreak, s.streak);
+  s.lastDay = di;
+  store.set('stats', s);
+}
+
+function renderDaily() {
+  const st = dailyState();
+  const p = st.puzzle;
+  const session = {
+    a: p.a, b: p.b, fixos: p.fixos,
+    placed: st.results.map((r) => ({word: r.word, n: r.truth, note: `você: ${r.guess}`})),
+  };
+  const view = $('#view');
+  const roundIdx = st.results.length;
+  const finished = roundIdx >= p.rodadas.length;
+
+  if (finished) return renderDailyEnd(st, session);
+
+  const [word, truth] = p.rodadas[roundIdx];
+  let guess = 50;
+
+  view.innerHTML = '';
+  const board = h(`
+    <div class="board">
+      <section class="panel" aria-label="Palavras na régua">
+        <div class="ladder-head">
+          <span class="eyebrow">Desafio #${st.number}</span>
+          <span class="theme-chip">${esc(p.tema)}</span>
+        </div>
+        <ol class="ladder" id="ladder"></ol>
+      </section>
+      <section class="play">
+        <div class="round-line">
+          <span class="eyebrow">Palavra ${roundIdx + 1} de ${p.rodadas.length}</span>
+          <div class="pips">${p.rodadas.map((_, i) => `<span class="pip ${i < roundIdx ? 'done' : i === roundIdx ? 'now' : ''}"></span>`).join('')}</div>
+        </div>
+        <div class="word-card">
+          <div class="q">Onde fica</div>
+          <div class="big">${esc(word)}</div>
+          <div class="between">entre <b>${esc(p.a)}</b> (1) e <b>${esc(p.b)}</b> (100)?</div>
+        </div>
+        ${roundIdx === 0 ? '<p class="hint-text" style="margin:0">Arraste a fita amarela até o número e toque em <b>Cravar</b>. A lista ao lado mostra onde sua palavra entraria.</p>' : ''}
+        <div id="tape-slot"></div>
+        <div class="ends"><span>1 · ${esc(p.a)}</span><span>${esc(p.b)} · 100</span></div>
+        <div id="action-slot"></div>
+      </section>
+    </div>`);
+  view.append(board);
+
+  const ladder = $('#ladder');
+  const drawLadder = (opts) => { ladder.innerHTML = ladderHTML(session, opts); };
+  drawLadder({ghost: {word, n: guess}});
+
+  const mountTape = (value, opts) => {
+    $('#tape-slot').innerHTML = tapeHTML('guess', value, opts);
+    return $('#guess');
+  };
+  const input = mountTape(guess);
+  const setGuess = (v) => {
+    guess = clampN(v);
+    input.value = guess;
+    $('#guess-readout').textContent = guess;
+    $('#guess-readout').style.left = pos(guess);
+    drawLadder({ghost: {word, n: guess}});
+  };
+  input.addEventListener('input', () => { setGuess(+input.value); sfx.tick(guess); });
+
+  $('#action-slot').innerHTML = `
+    <div class="controls">
+      <button class="nudge" id="minus" aria-label="Diminuir 1">−</button>
+      <button class="primary" id="lock">Cravar ${'<span id="lock-n"></span>'}</button>
+      <button class="nudge" id="plus" aria-label="Aumentar 1">+</button>
+    </div>`;
+  const syncLock = () => { $('#lock-n').textContent = guess; };
+  syncLock();
+  input.addEventListener('input', syncLock);
+  $('#minus').onclick = () => { setGuess(guess - 1); sfx.tick(guess); syncLock(); };
+  $('#plus').onclick = () => { setGuess(guess + 1); sfx.tick(guess); syncLock(); };
+
+  $('#lock').onclick = () => {
+    sfx.lock();
+    const res = scoreRound(guess, truth);
+    st.results.push({word, truth, guess, d: res.d, pts: res.pts});
+    saveDaily(st);
+    session.placed.push({word, n: truth, note: `você: ${guess}`});
+
+    // reveal
+    setTimeout(() => sfx.reveal(), 120);
+    mountTape(guess, {disabled: true, marks: [{n: truth, cls: 'truth'}]});
+    drawLadder({fresh: word});
+    setTimeout(() => {
+      sfx.score(res.tier);
+      if (res.tier === TIERS[0]) confetti();
+    }, 420);
+    const last = st.results.length >= p.rodadas.length;
+    $('#action-slot').innerHTML = `
+      <div class="result" style="--tier:${res.tier.color}">
+        <span class="emo" aria-hidden="true">${res.tier.emo}</span>
+        <div><div class="tier">${res.tier.name}</div><div class="detail">Era <b>${truth}</b> · você cravou ${guess} · diferença de ${res.d}</div></div>
+        <span class="pts">+${res.pts}</span>
+      </div>
+      <div style="height:10px"></div>
+      <button class="primary" id="next" style="width:100%">${last ? 'Ver resultado' : 'Próxima palavra'}</button>`;
+    $('#next').onclick = () => { sfx.tap(); renderDaily(); };
+    $('#next').focus();
+  };
+}
+
+function renderDailyEnd(st, session) {
+  const p = st.puzzle;
+  const total = totalOf(st.results);
+  recordStats(total);
+  const title = titleFor(total, p.rodadas.length);
+  const row = emojiRow(st.results);
+  const shareText = `ENTRE #${st.number} · ${p.a} → ${p.b}\n${row} ${total}/500\n${title}`;
+  const view = $('#view');
+  view.innerHTML = '';
+  view.append(h(`
+    <div class="board">
+      <section class="panel" aria-label="Palavras na régua">
+        <div class="ladder-head"><span class="eyebrow">Desafio #${st.number}</span><span class="theme-chip">${esc(p.tema)}</span></div>
+        <ol class="ladder">${ladderHTML(session)}</ol>
+      </section>
+      <section class="panel end">
+        <span class="eyebrow">Resultado de hoje</span>
+        <div class="score">${total}<small>/500</small></div>
+        <div class="title">${esc(title)}</div>
+        <div class="emojis" aria-label="Rodadas">${row}</div>
+        <div class="row">
+          <button class="primary" id="share">Copiar resultado</button>
+          <button class="ghost-btn" id="go-party">Jogar o modo festa</button>
+        </div>
+        <div class="countdown">Novo desafio em <b id="cd">--:--:--</b></div>
+        <div id="share-fallback-slot" style="width:100%"></div>
+      </section>
+    </div>`));
+  setTimeout(() => sfx.finish(total), 150);
+  $('#share').onclick = async () => {
+    sfx.tap();
+    try { await navigator.clipboard.writeText(shareText); toast('Resultado copiado'); }
+    catch {
+      const slot = $('#share-fallback-slot');
+      slot.innerHTML = '<textarea class="share-fallback" readonly></textarea>';
+      const ta = slot.querySelector('textarea'); ta.value = shareText; ta.focus(); ta.select();
+      toast('Selecionei o texto: copie e cole onde quiser');
+    }
+  };
+  $('#go-party').onclick = () => setMode('party');
+  const tickCd = () => {
+    const el = $('#cd'); if (!el) return;
+    const now = new Date(); const next = new Date(now); next.setHours(24, 0, 0, 0);
+    let s = Math.max(0, Math.floor((next - now) / 1000));
+    const hh = String(Math.floor(s / 3600)).padStart(2, '0'); s %= 3600;
+    const mm = String(Math.floor(s / 60)).padStart(2, '0'); const ss = String(s % 60).padStart(2, '0');
+    el.textContent = `${hh}:${mm}:${ss}`;
+    if (hh === '00' && mm === '00' && ss === '00') renderDaily();
+  };
+  tickCd();
+  clearInterval(renderDailyEnd.timer);
+  renderDailyEnd.timer = setInterval(tickCd, 1000);
+}
+
+/* =====================================================================
+   PARTY MODE (pass-and-play, cooperative)
+   ===================================================================== */
+const party = {
+  a: '', b: '', rounds: 5, results: [], used: [], fixos: [], placed: [],
+  current: null, // {word, n}
+};
+
+function randomPair() {
+  const i = Math.floor(Math.random() * PARTY_WORDS.length);
+  let j = Math.floor(Math.random() * (PARTY_WORDS.length - 1));
+  if (j >= i) j += 1;
+  return [PARTY_WORDS[i], PARTY_WORDS[j]];
+}
+
+function renderPartySetup() {
+  if (!party.a) [party.a, party.b] = randomPair();
+  const view = $('#view');
+  view.innerHTML = '';
+  view.append(h(`
+    <section class="panel party-setup">
+      <span class="eyebrow">Modo festa · um celular, várias pessoas</span>
+      <div class="pair">
+        <label for="pa">Vale 1<input id="pa" maxlength="22" value="${esc(party.a)}"></label>
+        <span class="arrow">→</span>
+        <label for="pb">Vale 100<input id="pb" maxlength="22" value="${esc(party.b)}"></label>
+      </div>
+      <div class="row" style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="ghost-btn" id="reroll">Sortear outro par</button>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Rodadas</div>
+        <div class="seg" id="rounds">${[5, 8, 10].map((n) => `<button data-n="${n}" aria-pressed="${n === party.rounds}">${n}</button>`).join('')}</div>
+      </div>
+      <p class="hint-text">A cada rodada, uma pessoa vê um número secreto e fala uma palavra que mora ali entre as duas pontas. O resto do grupo tenta acertar o número. Todo mundo soma pontos juntos.</p>
+      <button class="primary" id="start">Começar</button>
+    </section>`));
+  $('#reroll').onclick = () => { sfx.flip(); [party.a, party.b] = randomPair(); $('#pa').value = party.a; $('#pb').value = party.b; };
+  $('#rounds').onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    sfx.tap(); party.rounds = +b.dataset.n;
+    $('#rounds').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  };
+  $('#start').onclick = () => {
+    party.a = ($('#pa').value.trim() || 'COMEÇO').toUpperCase();
+    party.b = ($('#pb').value.trim() || 'FIM').toUpperCase();
+    party.results = []; party.used = []; party.placed = []; party.current = null;
+    sfx.lock();
+    renderPartySecret();
+  };
+}
+
+function renderPartySecret() {
+  if (party.results.length >= party.rounds) return renderPartyEnd();
+  let n;
+  do { n = 2 + Math.floor(Math.random() * 98); } while (party.used.includes(n) || n > 99);
+  party.used.push(n);
+  const view = $('#view');
+  view.innerHTML = '';
+  view.append(h(`
+    <div class="board">
+      <section class="panel" aria-label="Palavras na régua">
+        <div class="ladder-head"><span class="eyebrow">Rodada ${party.results.length + 1} de ${party.rounds}</span><span class="theme-chip">placar ${totalOf(party.results)}</span></div>
+        <ol class="ladder">${ladderHTML(party)}</ol>
+      </section>
+      <section class="secret" id="secret">
+        <span class="eyebrow">Passe o celular para quem vai dar a dica</span>
+        <p class="hint-text">Só essa pessoa pode olhar a tela agora.</p>
+        <button class="primary" id="peek">Ver número secreto</button>
+      </section>
+    </div>`));
+  $('#peek').onclick = () => {
+    sfx.flip();
+    const box = $('#secret');
+    box.innerHTML = `
+      <span class="eyebrow">Seu número secreto</span>
+      <div class="n">${n}</div>
+      <p class="hint-text">Pense numa palavra que fica nesse ponto entre <b>${esc(party.a)}</b> (1) e <b>${esc(party.b)}</b> (100). Olhe a lista para se guiar.</p>
+      <label for="clue" class="eyebrow" style="align-self:stretch; text-align:left">Sua palavra</label>
+      <input id="clue" class="clue-input" maxlength="26" autocomplete="off" placeholder="ex.: MOCHILA">
+      <button class="primary" id="hide" disabled style="align-self:stretch">Esconder e mostrar ao grupo</button>`;
+    const clue = $('#clue');
+    clue.focus();
+    clue.oninput = () => { $('#hide').disabled = !clue.value.trim(); };
+    const go = () => {
+      if (!clue.value.trim()) return;
+      party.current = {word: clue.value.trim().toUpperCase(), n};
+      sfx.lock();
+      renderPartyGuess();
+    };
+    $('#hide').onclick = go;
+    clue.onkeydown = (e) => { if (e.key === 'Enter') go(); };
+  };
+}
+
+function renderPartyGuess() {
+  const {word, n: truth} = party.current;
+  let guess = 50;
+  const view = $('#view');
+  view.innerHTML = '';
+  view.append(h(`
+    <div class="board">
+      <section class="panel" aria-label="Palavras na régua">
+        <div class="ladder-head"><span class="eyebrow">Rodada ${party.results.length + 1} de ${party.rounds}</span><span class="theme-chip">placar ${totalOf(party.results)}</span></div>
+        <ol class="ladder" id="ladder"></ol>
+      </section>
+      <section class="play">
+        <div class="word-card">
+          <div class="q">A dica é</div>
+          <div class="big">${esc(word)}</div>
+          <div class="between">Em que número ela mora entre <b>${esc(party.a)}</b> e <b>${esc(party.b)}</b>?</div>
+        </div>
+        <div id="tape-slot">${tapeHTML('guess', guess)}</div>
+        <div class="ends"><span>1 · ${esc(party.a)}</span><span>${esc(party.b)} · 100</span></div>
+        <div id="action-slot">
+          <div class="controls">
+            <button class="nudge" id="minus" aria-label="Diminuir 1">−</button>
+            <button class="primary" id="lock">Cravar <span id="lock-n">${guess}</span></button>
+            <button class="nudge" id="plus" aria-label="Aumentar 1">+</button>
+          </div>
+        </div>
+      </section>
+    </div>`));
+  const ladder = $('#ladder');
+  const draw = (opts) => { ladder.innerHTML = ladderHTML(party, opts); };
+  draw({ghost: {word, n: guess}});
+  const input = $('#guess');
+  const setGuess = (v) => {
+    guess = clampN(v); input.value = guess;
+    $('#guess-readout').textContent = guess; $('#guess-readout').style.left = pos(guess);
+    $('#lock-n').textContent = guess;
+    draw({ghost: {word, n: guess}});
+  };
+  input.oninput = () => { setGuess(+input.value); sfx.tick(guess); };
+  $('#minus').onclick = () => { setGuess(guess - 1); sfx.tick(guess); };
+  $('#plus').onclick = () => { setGuess(guess + 1); sfx.tick(guess); };
+  $('#lock').onclick = () => {
+    sfx.lock();
+    const res = scoreRound(guess, truth);
+    party.results.push({word, truth, guess, d: res.d, pts: res.pts});
+    party.placed.push({word, n: truth, note: `chute: ${guess}`});
+    setTimeout(() => sfx.reveal(), 120);
+    $('#tape-slot').innerHTML = tapeHTML('guess', guess, {disabled: true, marks: [{n: truth, cls: 'truth'}]});
+    draw({fresh: word});
+    setTimeout(() => { sfx.score(res.tier); if (res.tier === TIERS[0]) confetti(); }, 420);
+    const last = party.results.length >= party.rounds;
+    $('#action-slot').innerHTML = `
+      <div class="result" style="--tier:${res.tier.color}">
+        <span class="emo" aria-hidden="true">${res.tier.emo}</span>
+        <div><div class="tier">${res.tier.name}</div><div class="detail">O número era <b>${truth}</b> · o grupo cravou ${guess}</div></div>
+        <span class="pts">+${res.pts}</span>
+      </div>
+      <div style="height:10px"></div>
+      <button class="primary" id="next" style="width:100%">${last ? 'Ver resultado do grupo' : 'Próxima rodada'}</button>`;
+    $('#next').onclick = () => { sfx.tap(); renderPartySecret(); };
+    $('#next').focus();
+  };
+}
+
+function renderPartyEnd() {
+  const total = totalOf(party.results);
+  const max = party.rounds * 100;
+  const title = titleFor(total, party.rounds);
+  const view = $('#view');
+  view.innerHTML = '';
+  view.append(h(`
+    <div class="board">
+      <section class="panel" aria-label="Palavras na régua">
+        <div class="ladder-head"><span class="eyebrow">${esc(party.a)} → ${esc(party.b)}</span></div>
+        <ol class="ladder">${ladderHTML(party)}</ol>
+      </section>
+      <section class="panel end">
+        <span class="eyebrow">Placar do grupo</span>
+        <div class="score">${total}<small>/${max}</small></div>
+        <div class="title">${esc(title)}</div>
+        <div class="emojis">${emojiRow(party.results)}</div>
+        <div class="row">
+          <button class="primary" id="again">Jogar de novo</button>
+          <button class="ghost-btn" id="newpair">Novo par de palavras</button>
+        </div>
+      </section>
+    </div>`));
+  setTimeout(() => sfx.finish((total / max) * 500), 150);
+  $('#again').onclick = () => { party.results = []; party.used = []; party.placed = []; sfx.lock(); renderPartySecret(); };
+  $('#newpair').onclick = () => { party.a = ''; renderPartySetup(); };
+}
+
+/* =====================================================================
+   Shell: modes, overlays, sound toggle
+   ===================================================================== */
+let mode = 'daily';
+function setMode(m) {
+  mode = m;
+  sfx.tap();
+  $('#mode-daily').setAttribute('aria-pressed', String(m === 'daily'));
+  $('#mode-party').setAttribute('aria-pressed', String(m === 'party'));
+  clearInterval(renderDailyEnd.timer);
+  if (m === 'daily') renderDaily(); else renderPartySetup();
+}
+$('#mode-daily').onclick = () => setMode('daily');
+$('#mode-party').onclick = () => setMode('party');
+
+$('#tier-table').innerHTML = TIERS.map((t) => `<span>${t.emo}</span><span>${t.max === 0 ? 'Número exato' : t.max === 99 ? 'Mais de 25 de distância' : `Até ${t.max} de distância`}</span><span class="p">${t.pts}</span>`).join('');
+
+const open = (id) => { sfx.tap(); $(id).hidden = false; $(id).querySelector('button')?.focus(); };
+document.querySelectorAll('.overlay').forEach((ov) => {
+  ov.addEventListener('click', (e) => { if (e.target === ov || e.target.closest('[data-close]')) { ov.hidden = true; sfx.tap(); } });
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.overlay').forEach((o) => { o.hidden = true; }); });
+$('#btn-help').onclick = () => open('#ov-help');
+$('#btn-stats').onclick = () => {
+  const s = store.get('stats', {played: 0, sum: 0, best: 0, streak: 0, maxStreak: 0});
+  const avg = s.played ? Math.round(s.sum / s.played) : 0;
+  $('#stats-grid').innerHTML = [
+    [s.played, 'jogos'], [avg, 'média'], [s.best, 'recorde'], [s.streak, 'sequência'],
+  ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
+  open('#ov-stats');
+};
+const syncSound = () => {
+  $('#btn-sound').setAttribute('aria-pressed', String(sfx.on));
+  $('#btn-sound').setAttribute('aria-label', sfx.on ? 'Som ligado' : 'Som desligado');
+  $('#snd-wave').toggleAttribute('hidden', !sfx.on);
+  $('#snd-x').toggleAttribute('hidden', sfx.on);
+};
+$('#btn-sound').onclick = () => { sfx.toggle(); syncSound(); };
+syncSound();
+document.addEventListener('pointerdown', () => sfx.unlock(), {once: true});
+
+renderDaily();
+})();
+</script>
