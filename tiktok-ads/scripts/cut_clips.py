@@ -79,7 +79,7 @@ def build(clip, beat, extra=0.0):
         subprocess.run([
             "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
             "-ss", f"{clip['in']:.3f}", "-t", f"{out_dur:.4f}", "-i", str(src), "-vn",
-            "-af", "highpass=f=80,loudnorm=I=-15:TP=-1.5:LRA=11,afade=t=in:d=0.05",
+            "-af", "highpass=f=80,loudnorm=I=-10:TP=-1.2:LRA=11,alimiter=limit=0.89,afade=t=in:d=0.05",
             "-ar", "48000", "-ac", "2", str(OUT / f"{clip['id']}.wav"),
         ], check=True)
     return out, out_dur, fps_in
