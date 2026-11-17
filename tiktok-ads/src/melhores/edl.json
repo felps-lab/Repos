@@ -42,7 +42,7 @@
     {"id": "c21", "src": "23.mp4", "in": 16.7, "beats": 8, "speed": 0.5,  "bw": "full", "note": "piscina à noite (lento, P&B)"},
     {"id": "c22", "src": "32.mp4", "in": 12.0, "beats": 4, "speed": 0.75, "bw": "full", "note": "selfie"},
     {"id": "c23", "src": "43.mp4", "in": 0.5,  "beats": 4, "speed": 0.75, "bw": "full", "note": "selfie"},
-    {"id": "c24", "src": "26.mp4", "in": 14.0, "beats": 8, "speed": 0.5,  "bw": "out", "fit": "contain", "rotate": 90, "note": "foto em grupo, volta a cor"},
+    {"id": "c24", "src": "26.mp4", "in": 14.0, "beats": 8, "speed": 0.5,  "bw": "out", "fit": "contain", "rotate": -90, "note": "foto em grupo, volta a cor"},
 
     {"id": "c25", "src": "14.mp4", "in": 4.5,  "beats": 8, "speed": 0.5,  "bw": "none", "note": "pôr do sol, final"}
   ]
