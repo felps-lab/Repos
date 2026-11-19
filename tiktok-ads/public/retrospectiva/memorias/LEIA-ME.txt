@@ -1,0 +1,5 @@
+Coloque aqui suas fotos (jpg, png, webp) ou vídeos curtos (mp4, mov, webm).
+Depois, no Studio (ou em src/Root.tsx), preencha o campo "arquivo" de cada mês, por exemplo:
+  retrospectiva/memorias/janeiro.jpg
+Deixe vazio para mostrar o espaço "Sua foto aqui".
+Dica: fotos verticais (4:5 ou 9:16) ficam melhores. Vídeos tocam sem som.
