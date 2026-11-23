@@ -1,0 +1,38 @@
+{
+  "frigideira": {
+    "voice": "pf_dora",
+    "speed": 1.08,
+    "scenes": [
+      {"id": "hook", "text": "Ainda raspando ovo grudado na panela, todo dia de manhã?"},
+      {"id": "reveal", "text": "Conheça a Vitta Chef. A frigideira antiaderente com revestimento cerâmico de cinco camadas.", "tts": "Conheça a Vita Chéf. A frigideira antiaderente com revestimento cerâmico de cinco camadas."},
+      {"id": "slide", "text": "O ovo desliza sozinho. Sem óleo, sem esforço, sem sujeira."},
+      {"id": "heat", "text": "Aquece por igual em segundos, e funciona em qualquer fogão, inclusive no de indução."},
+      {"id": "features", "text": "Livre de PFOA, cabo que não esquenta, e lava em dez segundos.", "tts": "Livre de PFOÁ, cabo que não esquenta, e lava em dez segundos."},
+      {"id": "cta", "text": "Cozinhar ficou fácil. Toque no link e garanta a sua, com frete grátis!"}
+    ]
+  },
+  "inversor": {
+    "voice": "pm_alex",
+    "speed": 1.08,
+    "scenes": [
+      {"id": "hook", "text": "Sua conta de luz chegou alta de novo?"},
+      {"id": "reveal", "text": "Esse é o VoltSol H5. O inversor solar híbrido que transforma sol em economia de verdade.", "tts": "Esse é o Voltsól agá cinco. O inversor solar híbrido que transforma sol em economia de verdade."},
+      {"id": "efficiency", "text": "Com noventa e oito por cento de eficiência, ele aproveita cada raio de sol."},
+      {"id": "backup", "text": "Faltou energia? A bateria assume em milissegundos, e a sua casa nem percebe."},
+      {"id": "app", "text": "E pelo aplicativo, você acompanha geração e economia em tempo real, de qualquer lugar."},
+      {"id": "cta", "text": "Economize até noventa por cento na conta. Toque no link e peça o seu orçamento!"}
+    ]
+  },
+  "skincare": {
+    "voice": "pf_dora",
+    "speed": 1.05,
+    "scenes": [
+      {"id": "hook", "text": "Três passos. Três minutos. E uma pele que todo mundo vai notar."},
+      {"id": "reveal", "text": "Esse é o kit Pura Pele. A rotina completa de skincare, numa caixinha só.", "tts": "Esse é o kit Pura Pele. A rotina completa de isquin quér, numa caixinha só."},
+      {"id": "step1", "text": "Passo um: o gel de limpeza remove a oleosidade sem ressecar."},
+      {"id": "step2", "text": "Passo dois: o sérum de vitamina C deixa a pele uniforme e iluminada.", "tts": "Passo dois: o sérum de vitamina cê deixa a pele uniforme e iluminada."},
+      {"id": "step3", "text": "Passo três: o hidratante com ácido hialurônico mantém a pele hidratada o dia inteiro."},
+      {"id": "cta", "text": "Vegano, dermatologicamente testado, e pronto pra sua rotina. Garanta o seu no link!"}
+    ]
+  }
+}
