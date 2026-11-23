@@ -1,9 +1,10 @@
-import {Composition, Folder} from 'remotion';
+import {Composition, Folder, Still} from 'remotion';
 import {Frigideira} from './frigideira/Frigideira';
 import {frigideiraVoice} from './generated/frigideira';
 import {inversorVoice} from './generated/inversor';
 import {skincareVoice} from './generated/skincare';
 import {Inversor} from './inversor/Inversor';
+import {StoryAniversario} from './story/StoryAniversario';
 import {MELHORES_DURATION, MelhoresMomentos} from './melhores/MelhoresMomentos';
 import {RESENHA_DURATION, ResenhaEdit} from './melhores/ResenhaEdit';
 import {
@@ -98,6 +99,20 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{withMusic: false}}
+      />
+      <Still
+        id="StoryAniversario"
+        component={StoryAniversario}
+        width={1080}
+        height={1920}
+        defaultProps={{showText: true, title: 'feliz aniversário!'}}
+      />
+      <Still
+        id="StoryAniversarioSemTexto"
+        component={StoryAniversario}
+        width={1080}
+        height={1920}
+        defaultProps={{showText: false, title: ''}}
       />
     </Folder>
   );
