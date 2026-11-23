@@ -27,7 +27,7 @@ export const StoryGrade: React.FC<Props> = ({border = '#ffffff', hd = false}) =>
       <Cell src={img('f3')} w={HALF} h={TOP} />
     </div>
     <Cell src={img('f2')} w={W} h={MID} />
-    <Cell src={img('f4')} w={W} h={BOT} pos="50% 30%" />
+    <Cell src={img('f4')} w={W} h={BOT} pos={hd ? '50% 52%' : '50% 30%'} />
   </AbsoluteFill>
   );
 };
