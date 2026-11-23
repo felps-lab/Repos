@@ -115,7 +115,8 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         defaultProps={{showText: false, title: ''}}
       />
-      <Still id="StoryGrade" component={StoryGrade} width={1080} height={1920} />
+      <Still id="StoryGrade" component={StoryGrade} width={1080} height={1920} defaultProps={{border: '#ffffff', hd: false}} />
+      <Still id="StoryGradePretaHD" component={StoryGrade} width={1080} height={1920} defaultProps={{border: '#000000', hd: true}} />
     </Folder>
   );
 };
