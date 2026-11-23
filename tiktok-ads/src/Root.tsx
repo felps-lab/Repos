@@ -5,6 +5,7 @@ import {inversorVoice} from './generated/inversor';
 import {skincareVoice} from './generated/skincare';
 import {Inversor} from './inversor/Inversor';
 import {StoryAniversario} from './story/StoryAniversario';
+import {StoryGrade} from './story/StoryGrade';
 import {MELHORES_DURATION, MelhoresMomentos} from './melhores/MelhoresMomentos';
 import {RESENHA_DURATION, ResenhaEdit} from './melhores/ResenhaEdit';
 import {
@@ -114,6 +115,7 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         defaultProps={{showText: false, title: ''}}
       />
+      <Still id="StoryGrade" component={StoryGrade} width={1080} height={1920} />
     </Folder>
   );
 };
